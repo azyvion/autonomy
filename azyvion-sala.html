@@ -4,32 +4,401 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Azyvion · Sala de equipo</title>
 <style>
-:root{color-scheme:dark;--bg:#080a0f;--panel:#11141d;--panel2:#171b27;--line:#282d40;--text:#e8ebf5;--muted:#8990aa;--blue:#5680ff;--green:#31cf83;--amber:#ffc15b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}button,input{font:inherit}button{cursor:pointer;color:inherit}.app{min-height:100vh;display:grid;grid-template-rows:58px 1fr 82px}.top{display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--line);background:#0d1017}.brand{font-weight:700;letter-spacing:.2px}.brand b{display:inline-grid;place-items:center;background:var(--blue);width:29px;height:29px;border-radius:8px;margin-right:9px}.meeting-info{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px}.live{color:var(--green);font-family:monospace}.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;min-height:0}.stage{padding:25px;display:flex;flex-direction:column;gap:18px;min-width:0}.heading{display:flex;justify-content:space-between;align-items:flex-start}.heading h1{font-size:21px;margin:0 0 4px}.heading p{margin:0;color:var(--muted);font-size:12px}.demo{font-size:11px;color:var(--amber);border:1px solid #624b25;border-radius:20px;padding:5px 10px}.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;flex:1;align-content:start}.tile{position:relative;min-height:190px;aspect-ratio:16/10;background:linear-gradient(145deg,#1b2030,#10131c);border:1px solid var(--line);border-radius:13px;overflow:hidden;display:flex;align-items:center;justify-content:center}.tile.speaking{border-color:var(--blue);box-shadow:0 0 0 1px #5680ff55}.tile video{width:100%;height:100%;object-fit:cover;display:none;transform:scaleX(-1)}.avatar{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-size:33px;background:#27324e;border:1px solid #3a4c77}.you .avatar{display:none}.tile-label{position:absolute;bottom:10px;left:11px;background:#090b11cc;padding:5px 9px;border-radius:7px;font-size:12px}.tile-status{position:absolute;top:10px;right:10px;color:var(--muted);font-size:10px;background:#090b11b8;padding:4px 7px;border-radius:6px}.side{border-left:1px solid var(--line);background:#0d1017;display:flex;flex-direction:column;min-height:0}.side-head{padding:17px;border-bottom:1px solid var(--line);font-weight:600}.transcript{flex:1;overflow:auto;padding:14px}.empty{text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:35px 10px}.bubble{margin:0 0 13px;font-size:12px;line-height:1.5}.who{font-size:10px;color:var(--blue);font-weight:700;margin-bottom:4px}.bubble.you-msg .who{color:var(--green)}.entry{padding:12px;border-top:1px solid var(--line);display:flex;gap:7px}.entry input{min-width:0;flex:1;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:8px;padding:10px}.send{border:0;background:var(--blue);border-radius:8px;padding:0 13px}.controls{display:flex;align-items:center;justify-content:center;gap:11px;border-top:1px solid var(--line);background:#0d1017}.ctrl{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);font-size:17px}.ctrl:hover{border-color:var(--blue)}.ctrl.off{background:#5d2027;border-color:#9b343e}.ctrl.end{background:#d83e4a;border:0;width:56px;border-radius:17px}.hint{color:var(--muted);font-size:11px;margin-left:12px}.toast{position:fixed;bottom:95px;left:50%;transform:translateX(-50%);padding:10px 15px;border:1px solid var(--line);border-radius:9px;background:#171b27;display:none;font-size:12px;z-index:5}.toast.show{display:block}@media(max-width:900px){.layout{grid-template-columns:1fr}.side{height:280px;border-left:0;border-top:1px solid var(--line)}.app{grid-template-rows:58px auto 76px}.stage{padding:16px}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tile{min-height:130px}}@media(max-width:520px){.tiles{grid-template-columns:1fr 1fr;gap:8px}.tile{min-height:115px}.heading{gap:8px}.hint{display:none}}
+:root{color-scheme:dark;--bg:#080a0f;--panel:#11141d;--panel2:#171b27;--line:#282d40;--text:#e8ebf5;--muted:#8990aa;--blue:#5680ff;--green:#31cf83;--amber:#ffc15b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}button,input{font:inherit}button{cursor:pointer;color:inherit}.app{min-height:100vh;display:grid;grid-template-rows:58px 1fr 82px}.top{display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--line);background:#0d1017}.brand{font-weight:700;letter-spacing:.2px}.brand b{display:inline-grid;place-items:center;background:var(--blue);width:29px;height:29px;border-radius:8px;margin-right:9px}.meeting-info{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px}.live{color:var(--green);font-family:monospace}.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;min-height:0}.stage{padding:25px;display:flex;flex-direction:column;gap:18px;min-width:0}.heading{display:flex;justify-content:space-between;align-items:flex-start}.heading h1{font-size:21px;margin:0 0 4px}.heading p{margin:0;color:var(--muted);font-size:12px}.status-badge{font-size:11px;border-radius:20px;padding:5px 10px;white-space:nowrap}.live-badge{color:var(--green);border:1px solid #1e6646}.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;flex:1;align-content:start}.tile{position:relative;min-height:190px;aspect-ratio:16/10;background:linear-gradient(145deg,#1b2030,#10131c);border:1px solid var(--line);border-radius:13px;overflow:hidden;display:flex;align-items:center;justify-content:center}.tile.speaking{border-color:var(--blue);box-shadow:0 0 0 1px #5680ff55}.tile.thinking{border-color:var(--amber);box-shadow:0 0 0 1px #ffc15b44}.tile video{width:100%;height:100%;object-fit:cover;display:none;transform:scaleX(-1)}.avatar{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-size:33px;background:#27324e;border:1px solid #3a4c77}.you .avatar{display:none}.tile-label{position:absolute;bottom:10px;left:11px;background:#090b11cc;padding:5px 9px;border-radius:7px;font-size:12px}.tile-status{position:absolute;top:10px;right:10px;color:var(--muted);font-size:10px;background:#090b11b8;padding:4px 7px;border-radius:6px}.thinking-dot{display:inline-block;animation:blink 1s infinite}.thinking-dot:nth-child(2){animation-delay:.2s}.thinking-dot:nth-child(3){animation-delay:.4s}@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}.side{border-left:1px solid var(--line);background:#0d1017;display:flex;flex-direction:column;min-height:0}.side-head{padding:17px;border-bottom:1px solid var(--line);font-weight:600}.transcript{flex:1;overflow:auto;padding:14px}.empty{text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:35px 10px}.bubble{margin:0 0 13px;font-size:12px;line-height:1.5}.who{font-size:10px;color:var(--blue);font-weight:700;margin-bottom:4px}.bubble.you-msg .who{color:var(--green)}.entry{padding:12px;border-top:1px solid var(--line);display:flex;gap:7px}.entry input{min-width:0;flex:1;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:8px;padding:10px}.entry input:disabled{opacity:.5}.send{border:0;background:var(--blue);border-radius:8px;padding:0 13px}.send:disabled{opacity:.4;cursor:not-allowed}.controls{display:flex;align-items:center;justify-content:center;gap:11px;border-top:1px solid var(--line);background:#0d1017}.ctrl{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);font-size:17px}.ctrl:hover{border-color:var(--blue)}.ctrl.off{background:#5d2027;border-color:#9b343e}.ctrl.end{background:#d83e4a;border:0;width:56px;border-radius:17px}.hint{color:var(--muted);font-size:11px;margin-left:12px}.toast{position:fixed;bottom:95px;left:50%;transform:translateX(-50%);padding:10px 15px;border:1px solid var(--line);border-radius:9px;background:#171b27;display:none;font-size:12px;z-index:5}.toast.show{display:block}@media(max-width:900px){.layout{grid-template-columns:1fr}.side{height:280px;border-left:0;border-top:1px solid var(--line)}.app{grid-template-rows:58px auto 76px}.stage{padding:16px}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tile{min-height:130px}}@media(max-width:520px){.tiles{grid-template-columns:1fr 1fr;gap:8px}.tile{min-height:115px}.heading{gap:8px}.hint{display:none}}
 </style>
 </head>
 <body><div class="app">
-<header class="top"><div class="brand"><b>A</b>Azyvion <span style="font-weight:400;color:#8990aa">· Sala de equipo</span></div><div class="meeting-info"><span class="live">● SALA ABIERTA</span><span id="clock"></span></div></header>
-<div class="layout"><main class="stage"><div class="heading"><div><h1>Reunión de equipo</h1><p>Pregunta cómo van y conversa con tus agentes.</p></div><span class="demo">Prototipo · respuestas de demostración</span></div>
-<section class="tiles" id="tiles">
-<div class="tile you" id="youTile"><video id="camera" autoplay playsinline muted></video><div class="avatar">🙂</div><span class="tile-label">Tú</span><span class="tile-status" id="youStatus">Cámara apagada</span></div>
-<div class="tile" data-agent="CEO"><div class="avatar">◎</div><span class="tile-label">CEO · Orquestador</span><span class="tile-status">Listo para hablar</span></div>
-<div class="tile" data-agent="Operaciones"><div class="avatar">⚙</div><span class="tile-label">COO · Operaciones</span><span class="tile-status">Listo para hablar</span></div>
-<div class="tile" data-agent="Tecnología"><div class="avatar">⌘</div><span class="tile-label">CTO · Tecnología</span><span class="tile-status">Listo para hablar</span></div>
-<div class="tile" data-agent="Comercial"><div class="avatar">🤝</div><span class="tile-label">CRO · Comercial</span><span class="tile-status">Listo para hablar</span></div>
-<div class="tile" data-agent="Finanzas"><div class="avatar">⊕</div><span class="tile-label">CFO · Finanzas</span><span class="tile-status">Listo para hablar</span></div>
-</section></main>
-<aside class="side"><div class="side-head">Conversación <span style="color:#8990aa;font-size:11px;font-weight:400">· notas en esta sesión</span></div><div class="transcript" id="transcript"><div class="empty" id="empty">La conversación aparecerá aquí.<br>Escribe un mensaje o activa el micrófono.</div></div><form class="entry" id="form"><input id="message" placeholder="Pregunta cómo va el equipo…" autocomplete="off"><button class="send" aria-label="Enviar">➤</button></form></aside></div>
-<footer class="controls"><button class="ctrl" id="mic" title="Activar micrófono">🎙</button><button class="ctrl" id="cam" title="Activar cámara">▣</button><button class="ctrl end" id="end" title="Cerrar sala">☎</button><span class="hint" id="hint">Activa cámara o micrófono cuando quieras</span></footer></div><div class="toast" id="toast"></div>
+<header class="top">
+  <div class="brand"><b>A</b>Azyvion <span style="font-weight:400;color:#8990aa">· Sala de equipo</span></div>
+  <div class="meeting-info"><span class="live">● SALA ABIERTA</span><span id="clock"></span></div>
+</header>
+<div class="layout">
+  <main class="stage">
+    <div class="heading">
+      <div><h1>Reunión de equipo</h1><p>Consulta el estado real del negocio con tus agentes.</p></div>
+      <span class="status-badge live-badge" id="connectionBadge">⟳ Conectando...</span>
+    </div>
+    <section class="tiles" id="tiles">
+      <div class="tile you" id="youTile">
+        <video id="camera" autoplay playsinline muted></video>
+        <div class="avatar">🙂</div>
+        <span class="tile-label">Tú · CEO</span>
+        <span class="tile-status" id="youStatus">Cámara apagada</span>
+      </div>
+      <div class="tile" data-agent="CEO"><div class="avatar">◎</div><span class="tile-label">CEO · Orquestador</span><span class="tile-status" id="statusCEO">Listo</span></div>
+      <div class="tile" data-agent="Operaciones"><div class="avatar">⚙</div><span class="tile-label">COO · Operaciones</span><span class="tile-status" id="statusOperaciones">Listo</span></div>
+      <div class="tile" data-agent="Tecnología"><div class="avatar">⌘</div><span class="tile-label">CTO · Tecnología</span><span class="tile-status" id="statusTecnología">Listo</span></div>
+      <div class="tile" data-agent="Comercial"><div class="avatar">🤝</div><span class="tile-label">CRO · Comercial</span><span class="tile-status" id="statusComercial">Listo</span></div>
+      <div class="tile" data-agent="Finanzas"><div class="avatar">⊕</div><span class="tile-label">CFO · Finanzas</span><span class="tile-status" id="statusFinanzas">Listo</span></div>
+    </section>
+  </main>
+  <aside class="side">
+    <div class="side-head">Conversación <span style="color:#8990aa;font-size:11px;font-weight:400">· datos en tiempo real</span></div>
+    <div class="transcript" id="transcript">
+      <div class="empty" id="empty">Sala conectada al CRM.<br>Pregunta algo a tu equipo.</div>
+    </div>
+    <form class="entry" id="form">
+      <input id="message" placeholder="Pregunta cómo va el equipo…" autocomplete="off">
+      <button class="send" id="sendBtn" aria-label="Enviar">➤</button>
+    </form>
+  </aside>
+</div>
+<footer class="controls">
+  <button class="ctrl" id="mic" title="Activar micrófono">🎙</button>
+  <button class="ctrl" id="cam" title="Activar cámara">▣</button>
+  <button class="ctrl end" id="end" title="Cerrar sala">☎</button>
+  <span class="hint" id="hint">Sala conectada al CRM de Azyvion</span>
+</footer>
+</div>
+<div class="toast" id="toast"></div>
+
 <script>
-const $=id=>document.getElementById(id);let stream=null,micOn=false,camOn=false,recognition=null;const transcript=$('transcript');
-function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
-function addMsg(who,text,you=false){$('empty')?.remove();const d=document.createElement('div');d.className='bubble'+(you?' you-msg':'');const n=document.createElement('div');n.className='who';n.textContent=who;const b=document.createElement('div');b.textContent=text;d.append(n,b);transcript.append(d);transcript.scrollTop=transcript.scrollHeight}
-async function ensureMedia(){if(stream)return stream;stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});stream.getTracks().forEach(t=>t.enabled=false);$('camera').srcObject=stream;return stream}
-$('cam').onclick=async()=>{try{await ensureMedia();camOn=!camOn;stream.getVideoTracks().forEach(t=>t.enabled=camOn);$('camera').style.display=camOn?'block':'none';$('youStatus').textContent=camOn?'Cámara activa':'Cámara apagada';$('cam').classList.toggle('off',!camOn);$('hint').textContent=camOn?'Tu cámara está visible solo en esta página':'Cámara apagada'}catch(e){toast('No pude abrir la cámara. Revisa los permisos del navegador y vuelve a intentarlo.')}};
-$('mic').onclick=async()=>{try{await ensureMedia();micOn=!micOn;stream.getAudioTracks().forEach(t=>t.enabled=micOn);$('mic').classList.toggle('off',!micOn);$('hint').textContent=micOn?'Micrófono activo':'Micrófono apagado';if(micOn)startRecognition();else if(recognition)recognition.stop()}catch(e){toast('No pude abrir el micrófono. Revisa los permisos del navegador.')}};
-function startRecognition(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('El dictado por voz no está disponible en este navegador. Puedes escribir en el chat.');return}recognition=new SR();recognition.lang='es-GT';recognition.continuous=true;recognition.interimResults=false;recognition.onresult=e=>{const phrase=e.results[e.results.length-1][0].transcript.trim();if(phrase){addMsg('Tú',phrase,true);respond(phrase)}};recognition.onerror=()=>{};recognition.onend=()=>{if(micOn)try{recognition.start()}catch(e){}};try{recognition.start()}catch(e){}}
-function respond(question){const q=question.toLowerCase();let who='CEO · Orquestador';let answer='Esta sala todavía usa respuestas de demostración. Para responder con el estado real del negocio, primero hay que conectar las fuentes de datos y el servicio de IA.';if(/operaci|proveedor|entrega/.test(q)){who='COO · Operaciones';answer='Puedo revisar tareas, entregas y proveedores cuando conectemos las herramientas de operaciones. En esta versión aún no tengo acceso a esos datos.'}else if(/venta|cliente|pipeline|comercial/.test(q)){who='CRO · Comercial';answer='Puedo revisar clientes y oportunidades cuando conectemos el CRM. Por ahora no puedo confirmar cifras reales ni acciones pendientes.'}else if(/finanz|dinero|presupuesto|costo/.test(q)){who='CFO · Finanzas';answer='Para darte un estado financiero fiable necesito conexión de solo lectura a las fuentes aprobadas. Esta demostración no consulta cuentas.'}else if(/tecnolog|sistema|código|incidente/.test(q)){who='CTO · Tecnología';answer='Puedo revisar sistemas e incidencias cuando conectemos las herramientas técnicas. Aún no estoy consultando infraestructura.'}setTimeout(()=>{document.querySelectorAll('.tile.speaking').forEach(x=>x.classList.remove('speaking'));const tile=[...document.querySelectorAll('[data-agent]')].find(x=>x.dataset.agent.startsWith(who.split(' · ')[1]));(tile||document.querySelector('[data-agent="CEO"]')).classList.add('speaking');addMsg(who,answer);if('speechSynthesis'in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(answer);u.lang='es-GT';u.onend=()=>document.querySelectorAll('.tile.speaking').forEach(x=>x.classList.remove('speaking'));speechSynthesis.speak(u)}setTimeout(()=>document.querySelectorAll('.tile.speaking').forEach(x=>x.classList.remove('speaking')),9000)},450)}
-$('form').onsubmit=e=>{e.preventDefault();const inp=$('message'),q=inp.value.trim();if(!q)return;inp.value='';addMsg('Tú',q,true);respond(q)};
-$('end').onclick=()=>{if(stream)stream.getTracks().forEach(t=>t.stop());if(recognition)recognition.stop();window.speechSynthesis?.cancel();stream=null;micOn=camOn=false;$('camera').style.display='none';$('youStatus').textContent='Cámara apagada';$('cam').classList.remove('off');$('mic').classList.remove('off');toast('Sala cerrada. La conversación queda visible hasta que cierres esta página.')};
-setInterval(()=>$('clock').textContent=new Date().toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit'}),1000);
-</script></body></html>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://dwtykzporgjjvdustjfq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3dHlrenBvcmdqanZkdXN0amZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIxNjY1MjMsImV4cCI6MjA1Nzc0MjUyM30.tWrWZhl7APl9oCTbX-uh88MIjRBVAipKjxNGpbwHDLo';
+const ORG_ID = 'org_azyvion_001';
+
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+let stream = null, micOn = false, camOn = false, recognition = null, responding = false;
+
+function toast(s) {
+  const t = $('toast');
+  t.textContent = s;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function addMsg(who, text, isYou = false) {
+  $('empty')?.remove();
+  const d = document.createElement('div');
+  d.className = 'bubble' + (isYou ? ' you-msg' : '');
+  const n = document.createElement('div');
+  n.className = 'who';
+  n.textContent = who;
+  const b = document.createElement('div');
+  b.textContent = text;
+  d.append(n, b);
+  $('transcript').append(d);
+  $('transcript').scrollTop = $('transcript').scrollHeight;
+}
+
+function setThinking(agentKey, on) {
+  const tile = document.querySelector(`[data-agent="${agentKey}"]`);
+  const statusEl = $('status' + agentKey);
+  if (!tile || !statusEl) return;
+  if (on) {
+    tile.classList.add('thinking');
+    statusEl.innerHTML = '<span class="thinking-dot">·</span><span class="thinking-dot">·</span><span class="thinking-dot">·</span>';
+  } else {
+    tile.classList.remove('thinking');
+    statusEl.textContent = 'Listo';
+  }
+}
+
+function setSpeaking(agentKey, label) {
+  document.querySelectorAll('.tile.speaking').forEach(x => x.classList.remove('speaking'));
+  const tile = document.querySelector(`[data-agent="${agentKey}"]`);
+  if (tile) {
+    tile.classList.add('speaking');
+    const statusEl = $('status' + agentKey);
+    if (statusEl) statusEl.textContent = 'Hablando';
+    setTimeout(() => {
+      tile.classList.remove('speaking');
+      if (statusEl) statusEl.textContent = 'Listo';
+    }, 9000);
+  }
+}
+
+function fmt(n) {
+  if (n === null || n === undefined) return '–';
+  return 'Q ' + Number(n).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ── SUPABASE QUERY ──────────────────────────────────────────────────────────
+async function query(table, select = '*', filters = {}, limit = 50) {
+  let url = `${SUPABASE_URL}/rest/v1/${table}?select=${encodeURIComponent(select)}&limit=${limit}`;
+  for (const [k, v] of Object.entries(filters)) {
+    url += `&${k}=eq.${encodeURIComponent(v)}`;
+  }
+  const r = await fetch(url, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY
+    }
+  });
+  if (!r.ok) return [];
+  return r.json();
+}
+
+// ── DATOS POR AGENTE ────────────────────────────────────────────────────────
+async function datosComercial() {
+  const [clientes, prospectos, cotizaciones] = await Promise.all([
+    query('Clientes', 'nombre,empresa,estado,valorGanado,valorCotizado,ultimaActividad', { organization_id: ORG_ID }, 100),
+    query('Prospectos', 'nombre,empresa,etapa,valorEstimado,probabilidad', { organization_id: ORG_ID }, 100),
+    query('Cotizaciones', 'numero,cliente,empresa,total,estado,fecha', { organization_id: ORG_ID }, 100)
+  ]);
+  return { clientes, prospectos, cotizaciones };
+}
+
+async function datosFinanzas() {
+  const transacciones = await query('Transacciones', 'fecha,tipo,concepto,monto,descripcion', { organization_id: ORG_ID }, 200);
+  const ingresos = transacciones.filter(t => t.tipo === 'Ingreso' || t.tipo === 'Venta');
+  const egresos = transacciones.filter(t => t.tipo === 'Egreso' || t.tipo === 'Gasto');
+  const totalIngresos = ingresos.reduce((a, t) => a + Number(t.monto || 0), 0);
+  const totalEgresos = egresos.reduce((a, t) => a + Number(t.monto || 0), 0);
+  const recientes = transacciones.slice(0, 10);
+  return { transacciones: recientes, totalIngresos, totalEgresos, balance: totalIngresos - totalEgresos, total: transacciones.length };
+}
+
+async function datosOperaciones() {
+  const [inventario, actividad] = await Promise.all([
+    query('Inventario', 'producto,categoria,unidades,estado,tipo', { organization_id: ORG_ID }, 100),
+    query('Actividad', 'tipo,usuario,descripcion,fecha', { organization_id: ORG_ID }, 20)
+  ]);
+  const stockBajo = inventario.filter(i => Number(i.unidades) === 0);
+  const activos = inventario.filter(i => i.tipo === 'Producto');
+  return { inventario: inventario.length, stockBajo: stockBajo.length, activos: activos.length, actividad };
+}
+
+async function datosTecnologia() {
+  const [usuarios, sesiones] = await Promise.all([
+    query('Usuarios', 'nombre,rol,activo,fechaReg', { organization_id: ORG_ID }, 50),
+    query('Sesiones', 'usuario,activo,creado', {}, 20)
+  ]);
+  const activos = usuarios.filter(u => u.activo);
+  return { totalUsuarios: usuarios.length, activos: activos.length, sesiones: sesiones.length };
+}
+
+// ── AGENTES ──────────────────────────────────────────────────────────────────
+const AGENTES = {
+  CEO: {
+    label: 'CEO · Orquestador',
+    keywords: [],  // catch-all
+    async responder(q) {
+      // Orquestador: toma datos de todos y da visión general
+      const [com, fin, ops] = await Promise.all([datosComercial(), datosFinanzas(), datosOperaciones()]);
+      const clientesActivos = com.clientes.filter(c => c.estado === 'Activo').length;
+      const prospectos = com.prospectos.length;
+      const cotsPendientes = com.cotizaciones.filter(c => c.estado === 'Enviada' || c.estado === 'Pendiente').length;
+      const cotsTotal = com.cotizaciones.reduce((a, c) => a + Number(c.total || 0), 0);
+      const lines = [
+        `Buenos días. Estado general de Azyvion:`,
+        `• Comercial: ${clientesActivos} clientes activos, ${prospectos} prospectos, ${cotsPendientes} cotizaciones pendientes (total cotizado ${fmt(cotsTotal)}).`,
+        `• Finanzas: ingresos ${fmt(fin.totalIngresos)}, egresos ${fmt(fin.totalEgresos)}, balance ${fmt(fin.balance)}. (${fin.total} transacciones registradas.)`,
+        `• Operaciones: ${ops.inventario} productos en inventario${ops.stockBajo > 0 ? `, ${ops.stockBajo} con stock en cero` : ', todos con stock'}.`,
+        `¿Quieres que algún área te amplíe la información?`
+      ];
+      return lines.join('\n');
+    }
+  },
+  Comercial: {
+    label: 'CRO · Comercial',
+    keywords: ['venta','cliente','prospecto','pipeline','comercial','cotizacion','cotización','oportunidad','cerrar','negocio'],
+    async responder(q) {
+      const { clientes, prospectos, cotizaciones } = await datosComercial();
+      const activos = clientes.filter(c => c.estado === 'Activo');
+      const totalGanado = clientes.reduce((a, c) => a + Number(c.valorGanado || 0), 0);
+      const totalCotizado = clientes.reduce((a, c) => a + Number(c.valorCotizado || 0), 0);
+      const etapas = {};
+      prospectos.forEach(p => { etapas[p.etapa] = (etapas[p.etapa] || 0) + 1; });
+      const etapaStr = Object.entries(etapas).map(([e, n]) => `${n} en ${e}`).join(', ') || 'sin datos';
+      const cotsEnviadas = cotizaciones.filter(c => c.estado === 'Enviada' || c.estado === 'Pendiente');
+      const cotsTotalVal = cotizaciones.reduce((a, c) => a + Number(c.total || 0), 0);
+      const recientes = cotizaciones.slice(0, 3).map(c => `${c.numero} · ${c.cliente} · ${fmt(c.total)} · ${c.estado}`).join(' | ') || '—';
+      return [
+        `Reporte comercial en tiempo real:`,
+        `• Clientes: ${clientes.length} en total, ${activos.length} activos.`,
+        `• Valor ganado acumulado: ${fmt(totalGanado)} | Valor cotizado: ${fmt(totalCotizado)}.`,
+        `• Prospectos: ${prospectos.length} en pipeline — ${etapaStr}.`,
+        `• Cotizaciones: ${cotizaciones.length} emitidas (${cotsEnviadas.length} pendientes de respuesta), total ${fmt(cotsTotalVal)}.`,
+        cotsEnviadas.length > 0 ? `• Últimas cotizaciones: ${recientes}.` : ''
+      ].filter(Boolean).join('\n');
+    }
+  },
+  Finanzas: {
+    label: 'CFO · Finanzas',
+    keywords: ['finanz','dinero','presupuesto','costo','ingreso','egreso','gasto','transaccion','transacción','saldo','caja','pago'],
+    async responder(q) {
+      const { transacciones, totalIngresos, totalEgresos, balance, total } = await datosFinanzas();
+      const recientes = transacciones.slice(0, 5).map(t => `${t.fecha} · ${t.tipo} · ${t.concepto} · ${fmt(t.monto)}`).join('\n  ');
+      return [
+        `Estado financiero actual (${total} transacciones registradas):`,
+        `• Ingresos totales: ${fmt(totalIngresos)}`,
+        `• Egresos totales: ${fmt(totalEgresos)}`,
+        `• Balance: ${fmt(balance)}`,
+        recientes ? `\nÚltimas transacciones:\n  ${recientes}` : ''
+      ].filter(Boolean).join('\n');
+    }
+  },
+  Operaciones: {
+    label: 'COO · Operaciones',
+    keywords: ['operaci','proveedor','entrega','inventario','stock','producto','almacen','almacén','actividad'],
+    async responder(q) {
+      const { inventario, stockBajo, activos, actividad } = await datosOperaciones();
+      const actRecientes = actividad.slice(0, 5).map(a => `${a.tipo} · ${a.usuario} · ${a.descripcion}`).join('\n  ');
+      return [
+        `Reporte de operaciones:`,
+        `• Inventario: ${inventario} ítems registrados, ${activos} productos físicos.`,
+        stockBajo > 0 ? `• ⚠ ${stockBajo} producto(s) con stock en cero.` : `• Stock: todos los productos tienen existencias.`,
+        actRecientes ? `\nActividad reciente en el CRM:\n  ${actRecientes}` : `\nSin actividad reciente registrada.`
+      ].filter(Boolean).join('\n');
+    }
+  },
+  Tecnología: {
+    label: 'CTO · Tecnología',
+    keywords: ['tecnolog','sistema','código','código','incidente','usuario','acceso','plataforma','crm','base de datos'],
+    async responder(q) {
+      const { totalUsuarios, activos, sesiones } = await datosTecnologia();
+      return [
+        `Estado de sistemas Azyvion:`,
+        `• CRM: operativo — conectado a Supabase PostgreSQL con RLS activo.`,
+        `• Usuarios registrados: ${totalUsuarios} (${activos} activos).`,
+        `• Sesiones en tabla: ${sesiones}.`,
+        `• Infraestructura: GitHub Pages (frontend estático) + Supabase (backend/auth).`,
+        `• Autenticación: migrada a Supabase Auth (FASE 4A completada).`
+      ].join('\n');
+    }
+  }
+};
+
+// ── ROUTER ───────────────────────────────────────────────────────────────────
+function elegirAgente(q) {
+  const ql = q.toLowerCase();
+  for (const [key, agente] of Object.entries(AGENTES)) {
+    if (key === 'CEO') continue;
+    if (agente.keywords.some(kw => ql.includes(kw))) return key;
+  }
+  return 'CEO'; // default: orquestador
+}
+
+async function respond(question) {
+  if (responding) return;
+  responding = true;
+  $('sendBtn').disabled = true;
+  $('message').disabled = true;
+
+  const agentKey = elegirAgente(question);
+  const agente = AGENTES[agentKey];
+
+  setThinking(agentKey, true);
+
+  try {
+    const answer = await agente.responder(question);
+    setThinking(agentKey, false);
+    setSpeaking(agentKey, agente.label);
+    addMsg(agente.label, answer);
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(answer.replace(/Q \d[\d.,]*/g, ''));
+      u.lang = 'es-GT';
+      u.onend = () => document.querySelectorAll('.tile.speaking').forEach(x => x.classList.remove('speaking'));
+      speechSynthesis.speak(u);
+    }
+  } catch (e) {
+    setThinking(agentKey, false);
+    addMsg(agente.label, 'No pude consultar los datos en este momento. Verifica la conexión con Supabase.');
+    console.error(e);
+  } finally {
+    responding = false;
+    $('sendBtn').disabled = false;
+    $('message').disabled = false;
+    $('message').focus();
+  }
+}
+
+// ── INIT: verificar conexión ─────────────────────────────────────────────────
+(async () => {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/Clientes?select=id&limit=1&organization_id=eq.${ORG_ID}`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    if (r.ok) {
+      $('connectionBadge').textContent = '● CRM Conectado';
+      $('connectionBadge').style.color = 'var(--green)';
+      $('connectionBadge').style.borderColor = '#1e6646';
+    } else {
+      throw new Error();
+    }
+  } catch {
+    $('connectionBadge').textContent = '○ Sin conexión';
+    $('connectionBadge').style.color = 'var(--amber)';
+  }
+})();
+
+// ── CÁMARA / MICRÓFONO ───────────────────────────────────────────────────────
+async function ensureMedia() {
+  if (stream) return stream;
+  stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  stream.getTracks().forEach(t => t.enabled = false);
+  $('camera').srcObject = stream;
+  return stream;
+}
+
+$('cam').onclick = async () => {
+  try {
+    await ensureMedia();
+    camOn = !camOn;
+    stream.getVideoTracks().forEach(t => t.enabled = camOn);
+    $('camera').style.display = camOn ? 'block' : 'none';
+    $('youStatus').textContent = camOn ? 'Cámara activa' : 'Cámara apagada';
+    $('cam').classList.toggle('off', !camOn);
+  } catch (e) { toast('No pude abrir la cámara. Revisa los permisos del navegador.'); }
+};
+
+$('mic').onclick = async () => {
+  try {
+    await ensureMedia();
+    micOn = !micOn;
+    stream.getAudioTracks().forEach(t => t.enabled = micOn);
+    $('mic').classList.toggle('off', !micOn);
+    $('hint').textContent = micOn ? 'Micrófono activo' : 'Sala conectada al CRM de Azyvion';
+    if (micOn) startRecognition();
+    else if (recognition) recognition.stop();
+  } catch (e) { toast('No pude abrir el micrófono. Revisa los permisos del navegador.'); }
+};
+
+function startRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { toast('Dictado por voz no disponible en este navegador. Usa el chat.'); return; }
+  recognition = new SR();
+  recognition.lang = 'es-GT';
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  recognition.onresult = e => {
+    const phrase = e.results[e.results.length - 1][0].transcript.trim();
+    if (phrase && !responding) { addMsg('Tú · CEO', phrase, true); respond(phrase); }
+  };
+  recognition.onerror = () => {};
+  recognition.onend = () => { if (micOn) try { recognition.start(); } catch (e) {} };
+  try { recognition.start(); } catch (e) {}
+}
+
+// ── FORM ─────────────────────────────────────────────────────────────────────
+$('form').onsubmit = e => {
+  e.preventDefault();
+  const inp = $('message');
+  const q = inp.value.trim();
+  if (!q || responding) return;
+  inp.value = '';
+  addMsg('Tú · CEO', q, true);
+  respond(q);
+};
+
+$('end').onclick = () => {
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  if (recognition) recognition.stop();
+  window.speechSynthesis?.cancel();
+  stream = null; micOn = camOn = false;
+  $('camera').style.display = 'none';
+  $('youStatus').textContent = 'Cámara apagada';
+  $('cam').classList.remove('off');
+  $('mic').classList.remove('off');
+  toast('Sala cerrada.');
+};
+
+setInterval(() => $('clock').textContent = new Date().toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' }), 1000);
+</script>
+</body>
+</html>
