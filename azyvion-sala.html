@@ -171,7 +171,7 @@ async function datosTecnologia() {
 }
 
 // ── ANTHROPIC API ────────────────────────────────────────────────────────────
-const ANTHROPIC_KEY = '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';
+let ANTHROPIC_KEY = '';
 
 async function askClaude(systemPrompt, userMessage) {
   const r = await fetch('https://api.anthropic.com/v1/messages', {
@@ -445,6 +445,43 @@ $('end').onclick = () => {
 };
 
 setInterval(() => $('clock').textContent = new Date().toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' }), 1000);
+
+// ── MODAL API KEY ─────────────────────────────────────────────────────────────
+function mostrarModal() {
+  $('apiModal').style.display = 'flex';
+  setTimeout(() => $('apiKeyInput').focus(), 100);
+}
+
+$('apiKeyForm').onsubmit = e => {
+  e.preventDefault();
+  const val = $('apiKeyInput').value.trim();
+  if (!val.startsWith('sk-ant-')) {
+    $('apiKeyError').textContent = 'La clave debe empezar con sk-ant-…';
+    return;
+  }
+  ANTHROPIC_KEY = val;
+  $('apiModal').style.display = 'none';
+  $('apiKeyInput').value = '';
+};
+
+// Mostrar modal al cargar
+window.addEventListener('DOMContentLoaded', mostrarModal);
 </script>
+
+<!-- Modal API Key -->
+<div id="apiModal" style="display:none;position:fixed;inset:0;background:#000000cc;z-index:100;align-items:center;justify-content:center">
+  <div style="background:#11141d;border:1px solid #282d40;border-radius:16px;padding:32px;width:360px;max-width:90vw">
+    <div style="font-size:22px;margin-bottom:6px;font-weight:700">🔑 Sala de equipo</div>
+    <p style="color:#8990aa;font-size:13px;margin:0 0 20px">Ingresa tu Anthropic API key para activar los agentes con IA real. La clave no se guarda en ningún servidor.</p>
+    <form id="apiKeyForm">
+      <input id="apiKeyInput" type="password" placeholder="sk-ant-…"
+        style="width:100%;background:#171b27;border:1px solid #282d40;border-radius:8px;padding:11px 12px;color:#e8ebf5;font-size:13px;font:inherit;box-sizing:border-box;margin-bottom:8px">
+      <div id="apiKeyError" style="color:#ff6b6b;font-size:12px;margin-bottom:8px;min-height:16px"></div>
+      <button type="submit" style="width:100%;background:#5680ff;border:0;border-radius:8px;padding:11px;color:#fff;font-weight:600;font:inherit;cursor:pointer;font-size:14px">
+        Entrar a la sala →
+      </button>
+    </form>
+  </div>
+</div>
 </body>
 </html>
