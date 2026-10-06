@@ -170,94 +170,137 @@ async function datosTecnologia() {
   return { totalUsuarios: usuarios.length, activos: activos.length, sesiones: sesiones.length };
 }
 
+// ── ANTHROPIC API ────────────────────────────────────────────────────────────
+const ANTHROPIC_KEY = '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';
+
+async function askClaude(systemPrompt, userMessage) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': ANTHROPIC_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: 400,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }]
+    })
+  });
+  if (!r.ok) throw new Error('API error ' + r.status);
+  const d = await r.json();
+  return d.content[0].text;
+}
+
+// ── PERSONALIDADES ───────────────────────────────────────────────────────────
+const PERSONAS = {
+  CEO: `Eres el agente CEO-Orquestador de Azyvion, empresa de tecnología guatemalteca. 
+Tu rol es dar visión general del negocio y coordinar al equipo. Hablas directamente con Hector, el CEO y fundador real de Azyvion.
+Eres estratégico, directo y propositivo. No eres un robot — opinas, señalas problemas y propones acciones.
+Responde en español, máximo 4-5 oraciones. Sin bullets, habla natural como en una reunión real.`,
+
+  Comercial: `Eres el CRO (Chief Revenue Officer) de Azyvion, empresa de tecnología guatemalteca.
+Tu obsesión es el pipeline, los clientes y cerrar ventas. Hablas con Hector, el CEO.
+Eres ambicioso, orientado a resultados, a veces impaciente con los números bajos.
+Usas los datos del CRM para dar contexto real, pero también opinas y propones acciones concretas.
+Responde en español, máximo 4-5 oraciones. Habla natural, no como reporte.`,
+
+  Finanzas: `Eres el CFO (Chief Financial Officer) de Azyvion, empresa de tecnología guatemalteca.
+Eres conservador, analítico y preciso. Le hablas a Hector, el CEO.
+Cuando los números son bajos, lo dices sin rodeos. Cuando hay algo preocupante, lo señalas.
+Usas los datos reales de transacciones para dar contexto, pero también razonas sobre lo que significan.
+Responde en español, máximo 4-5 oraciones. Habla natural, no como reporte.`,
+
+  Operaciones: `Eres el COO (Chief Operating Officer) de Azyvion, empresa de tecnología guatemalteca.
+Eres práctico, resolutivo y enfocado en que las cosas funcionen. Hablas con Hector, el CEO.
+Si hay problemas operativos (stock, procesos, actividad baja) los señalas y propones soluciones.
+Responde en español, máximo 4-5 oraciones. Habla directo, sin tecnicismos innecesarios.`,
+
+  Tecnología: `Eres el CTO (Chief Technology Officer) de Azyvion, empresa de tecnología guatemalteca.
+Conoces a fondo el CRM (frontend en GitHub Pages, backend en Supabase, auth migrada en Fase 4A).
+Hablas con Hector, el CEO y fundador. Eres técnico pero sabes explicar las cosas con claridad.
+Cuando te preguntan qué falta en el CRM, das una opinión real y concreta basada en lo que conoces del sistema.
+Responde en español, máximo 4-5 oraciones. Sé honesto y propositivo.`
+};
+
 // ── AGENTES ──────────────────────────────────────────────────────────────────
 const AGENTES = {
   CEO: {
     label: 'CEO · Orquestador',
-    keywords: [],  // catch-all
-    async responder(q) {
-      // Orquestador: toma datos de todos y da visión general
+    keywords: [],
+    async contexto(q) {
       const [com, fin, ops] = await Promise.all([datosComercial(), datosFinanzas(), datosOperaciones()]);
       const clientesActivos = com.clientes.filter(c => c.estado === 'Activo').length;
-      const prospectos = com.prospectos.length;
       const cotsPendientes = com.cotizaciones.filter(c => c.estado === 'Enviada' || c.estado === 'Pendiente').length;
       const cotsTotal = com.cotizaciones.reduce((a, c) => a + Number(c.total || 0), 0);
-      const lines = [
-        `Buenos días. Estado general de Azyvion:`,
-        `• Comercial: ${clientesActivos} clientes activos, ${prospectos} prospectos, ${cotsPendientes} cotizaciones pendientes (total cotizado ${fmt(cotsTotal)}).`,
-        `• Finanzas: ingresos ${fmt(fin.totalIngresos)}, egresos ${fmt(fin.totalEgresos)}, balance ${fmt(fin.balance)}. (${fin.total} transacciones registradas.)`,
-        `• Operaciones: ${ops.inventario} productos en inventario${ops.stockBajo > 0 ? `, ${ops.stockBajo} con stock en cero` : ', todos con stock'}.`,
-        `¿Quieres que algún área te amplíe la información?`
-      ];
-      return lines.join('\n');
+      return `DATOS REALES DEL CRM AZYVION:
+- Clientes activos: ${clientesActivos} de ${com.clientes.length} total
+- Prospectos en pipeline: ${com.prospectos.length}
+- Cotizaciones pendientes: ${cotsPendientes}, total cotizado: ${fmt(cotsTotal)}
+- Ingresos: ${fmt(fin.totalIngresos)}, Egresos: ${fmt(fin.totalEgresos)}, Balance: ${fmt(fin.balance)}
+- Transacciones registradas: ${fin.total}
+- Productos en inventario: ${ops.inventario}, con stock cero: ${ops.stockBajo}`;
     }
   },
   Comercial: {
     label: 'CRO · Comercial',
-    keywords: ['venta','cliente','prospecto','pipeline','comercial','cotizacion','cotización','oportunidad','cerrar','negocio'],
-    async responder(q) {
+    keywords: ['venta','cliente','prospecto','pipeline','comercial','cotizacion','cotización','oportunidad','cerrar','negocio','revenue'],
+    async contexto(q) {
       const { clientes, prospectos, cotizaciones } = await datosComercial();
-      const activos = clientes.filter(c => c.estado === 'Activo');
+      const activos = clientes.filter(c => c.estado === 'Activo').length;
       const totalGanado = clientes.reduce((a, c) => a + Number(c.valorGanado || 0), 0);
-      const totalCotizado = clientes.reduce((a, c) => a + Number(c.valorCotizado || 0), 0);
       const etapas = {};
       prospectos.forEach(p => { etapas[p.etapa] = (etapas[p.etapa] || 0) + 1; });
       const etapaStr = Object.entries(etapas).map(([e, n]) => `${n} en ${e}`).join(', ') || 'sin datos';
-      const cotsEnviadas = cotizaciones.filter(c => c.estado === 'Enviada' || c.estado === 'Pendiente');
+      const cotsEnviadas = cotizaciones.filter(c => c.estado === 'Enviada' || c.estado === 'Pendiente').length;
       const cotsTotalVal = cotizaciones.reduce((a, c) => a + Number(c.total || 0), 0);
-      const recientes = cotizaciones.slice(0, 3).map(c => `${c.numero} · ${c.cliente} · ${fmt(c.total)} · ${c.estado}`).join(' | ') || '—';
-      return [
-        `Reporte comercial en tiempo real:`,
-        `• Clientes: ${clientes.length} en total, ${activos.length} activos.`,
-        `• Valor ganado acumulado: ${fmt(totalGanado)} | Valor cotizado: ${fmt(totalCotizado)}.`,
-        `• Prospectos: ${prospectos.length} en pipeline — ${etapaStr}.`,
-        `• Cotizaciones: ${cotizaciones.length} emitidas (${cotsEnviadas.length} pendientes de respuesta), total ${fmt(cotsTotalVal)}.`,
-        cotsEnviadas.length > 0 ? `• Últimas cotizaciones: ${recientes}.` : ''
-      ].filter(Boolean).join('\n');
+      return `DATOS COMERCIALES REALES:
+- Clientes: ${clientes.length} total, ${activos} activos
+- Valor ganado acumulado: ${fmt(totalGanado)}
+- Prospectos: ${prospectos.length} — distribución: ${etapaStr}
+- Cotizaciones: ${cotizaciones.length} emitidas, ${cotsEnviadas} pendientes de respuesta, total: ${fmt(cotsTotalVal)}`;
     }
   },
   Finanzas: {
     label: 'CFO · Finanzas',
-    keywords: ['finanz','dinero','presupuesto','costo','ingreso','egreso','gasto','transaccion','transacción','saldo','caja','pago'],
-    async responder(q) {
+    keywords: ['finanz','dinero','presupuesto','costo','ingreso','egreso','gasto','transaccion','transacción','saldo','caja','pago','plata'],
+    async contexto(q) {
       const { transacciones, totalIngresos, totalEgresos, balance, total } = await datosFinanzas();
-      const recientes = transacciones.slice(0, 5).map(t => `${t.fecha} · ${t.tipo} · ${t.concepto} · ${fmt(t.monto)}`).join('\n  ');
-      return [
-        `Estado financiero actual (${total} transacciones registradas):`,
-        `• Ingresos totales: ${fmt(totalIngresos)}`,
-        `• Egresos totales: ${fmt(totalEgresos)}`,
-        `• Balance: ${fmt(balance)}`,
-        recientes ? `\nÚltimas transacciones:\n  ${recientes}` : ''
-      ].filter(Boolean).join('\n');
+      const ultimas = transacciones.slice(0, 5).map(t => `${t.fecha}: ${t.tipo} - ${t.concepto} ${fmt(t.monto)}`).join('; ');
+      return `DATOS FINANCIEROS REALES:
+- Ingresos totales: ${fmt(totalIngresos)}
+- Egresos totales: ${fmt(totalEgresos)}
+- Balance: ${fmt(balance)}
+- Total transacciones: ${total}
+- Últimas: ${ultimas || 'ninguna'}`;
     }
   },
   Operaciones: {
     label: 'COO · Operaciones',
-    keywords: ['operaci','proveedor','entrega','inventario','stock','producto','almacen','almacén','actividad'],
-    async responder(q) {
+    keywords: ['operaci','proveedor','entrega','inventario','stock','producto','almacen','almacén','actividad','proceso'],
+    async contexto(q) {
       const { inventario, stockBajo, activos, actividad } = await datosOperaciones();
-      const actRecientes = actividad.slice(0, 5).map(a => `${a.tipo} · ${a.usuario} · ${a.descripcion}`).join('\n  ');
-      return [
-        `Reporte de operaciones:`,
-        `• Inventario: ${inventario} ítems registrados, ${activos} productos físicos.`,
-        stockBajo > 0 ? `• ⚠ ${stockBajo} producto(s) con stock en cero.` : `• Stock: todos los productos tienen existencias.`,
-        actRecientes ? `\nActividad reciente en el CRM:\n  ${actRecientes}` : `\nSin actividad reciente registrada.`
-      ].filter(Boolean).join('\n');
+      const actStr = actividad.slice(0, 5).map(a => `${a.tipo}: ${a.descripcion}`).join('; ') || 'sin actividad reciente';
+      return `DATOS OPERATIVOS REALES:
+- Productos en inventario: ${inventario} (${activos} físicos)
+- Productos con stock cero: ${stockBajo}
+- Actividad reciente en CRM: ${actStr}`;
     }
   },
   Tecnología: {
     label: 'CTO · Tecnología',
-    keywords: ['tecnolog','sistema','código','código','incidente','usuario','acceso','plataforma','crm','base de datos'],
-    async responder(q) {
-      const { totalUsuarios, activos, sesiones } = await datosTecnologia();
-      return [
-        `Estado de sistemas Azyvion:`,
-        `• CRM: operativo — conectado a Supabase PostgreSQL con RLS activo.`,
-        `• Usuarios registrados: ${totalUsuarios} (${activos} activos).`,
-        `• Sesiones en tabla: ${sesiones}.`,
-        `• Infraestructura: GitHub Pages (frontend estático) + Supabase (backend/auth).`,
-        `• Autenticación: migrada a Supabase Auth (FASE 4A completada).`
-      ].join('\n');
+    keywords: ['tecnolog','sistema','código','incidente','usuario','acceso','plataforma','crm','base de datos','desarrollar','terminar','falta','mejorar','módulo'],
+    async contexto(q) {
+      const { totalUsuarios, activos } = await datosTecnologia();
+      return `DATOS TÉCNICOS REALES:
+- Usuarios en CRM: ${totalUsuarios} (${activos} activos)
+- Stack: GitHub Pages (frontend estático) + Supabase PostgreSQL + RLS multi-tenant
+- Auth: Supabase Auth, FASE 4A completada (getSession, onAuthStateChange, _currentUserRole)
+- Módulos existentes: Clientes, Prospectos, Cotizaciones, Inventario, Transacciones, Encuestas, Comunidad (COM_*), Reclutamiento, Empleados, Sucursales, Cajas/POS
+- Módulos con datos escasos o vacíos: Inventario (1 producto), Empleados (0), Cajas_Turnos (0), Encuestas (0 activas)
+- Tablas COM_* tienen 0 mensajes — módulo Comunidad sin uso real aún`;
     }
   }
 };
@@ -269,7 +312,7 @@ function elegirAgente(q) {
     if (key === 'CEO') continue;
     if (agente.keywords.some(kw => ql.includes(kw))) return key;
   }
-  return 'CEO'; // default: orquestador
+  return 'CEO';
 }
 
 async function respond(question) {
@@ -284,21 +327,24 @@ async function respond(question) {
   setThinking(agentKey, true);
 
   try {
-    const answer = await agente.responder(question);
+    const ctx = await agente.contexto(question);
+    const systemPrompt = PERSONAS[agentKey] + '\n\n' + ctx;
+    const answer = await askClaude(systemPrompt, question);
+
     setThinking(agentKey, false);
     setSpeaking(agentKey, agente.label);
     addMsg(agente.label, answer);
 
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(answer.replace(/Q \d[\d.,]*/g, ''));
+      const u = new SpeechSynthesisUtterance(answer);
       u.lang = 'es-GT';
       u.onend = () => document.querySelectorAll('.tile.speaking').forEach(x => x.classList.remove('speaking'));
       speechSynthesis.speak(u);
     }
   } catch (e) {
     setThinking(agentKey, false);
-    addMsg(agente.label, 'No pude consultar los datos en este momento. Verifica la conexión con Supabase.');
+    addMsg(agente.label, 'No pude responder en este momento. ' + (e.message || ''));
     console.error(e);
   } finally {
     responding = false;
