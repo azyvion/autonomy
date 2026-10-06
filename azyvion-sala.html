@@ -185,8 +185,9 @@ async function datosTecnologia() {
 
 // ── ANTHROPIC API ────────────────────────────────────────────────────────────
 let ANTHROPIC_KEY = '';
+const historial = []; // {role, content, agente}
 
-async function askClaude(systemPrompt, userMessage) {
+async function askClaude(systemPrompt, messages) {
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -197,9 +198,9 @@ async function askClaude(systemPrompt, userMessage) {
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5',
-      max_tokens: 400,
+      max_tokens: 350,
       system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }]
+      messages
     })
   });
   if (!r.ok) throw new Error('API error ' + r.status);
@@ -209,33 +210,30 @@ async function askClaude(systemPrompt, userMessage) {
 
 // ── PERSONALIDADES ───────────────────────────────────────────────────────────
 const PERSONAS = {
-  CEO: `Eres el agente CEO-Orquestador de Azyvion, empresa de tecnología guatemalteca. 
-Tu rol es dar visión general del negocio y coordinar al equipo. Hablas directamente con Hector, el CEO y fundador real de Azyvion.
-Eres estratégico, directo y propositivo. No eres un robot — opinas, señalas problemas y propones acciones.
-Responde en español, máximo 4-5 oraciones. Sin bullets, habla natural como en una reunión real.`,
+  CEO: `Eres el agente orquestador interno de Azyvion. Le hablas a Hector, el CEO y dueño.
+REGLA CRÍTICA: Si la pregunta es casual o simple ("me escuchan", "hola", "cómo están"), responde brevemente y con personalidad — nada de reportes. Si la pregunta pide datos o análisis, da un resumen directo y menciona qué área puede ampliar.
+Eres directo, estratégico, con criterio. Tienes opinión propia. Señalas lo que está mal sin rodeos.
+Habla como colega de confianza, no como asistente. Máximo 3-4 oraciones. Sin bullets. Sin saludos formales.`,
 
-  Comercial: `Eres el CRO (Chief Revenue Officer) de Azyvion, empresa de tecnología guatemalteca.
-Tu obsesión es el pipeline, los clientes y cerrar ventas. Hablas con Hector, el CEO.
-Eres ambicioso, orientado a resultados, a veces impaciente con los números bajos.
-Usas los datos del CRM para dar contexto real, pero también opinas y propones acciones concretas.
-Responde en español, máximo 4-5 oraciones. Habla natural, no como reporte.`,
+  Comercial: `Eres el CRO de Azyvion. Le hablas a Hector, el CEO.
+REGLA CRÍTICA: Si te preguntan algo casual o que no es de ventas, responde brevemente en una oración. Si te preguntan de ventas/clientes/pipeline, opina con los datos reales — no solo los listes, analízalos.
+Eres ambicioso y directo. 2611 prospectos con solo 3 clientes te preocupa. Lo dices.
+Sin bullets. Sin reportes. Habla como en una reunión. Máximo 3-4 oraciones.`,
 
-  Finanzas: `Eres el CFO (Chief Financial Officer) de Azyvion, empresa de tecnología guatemalteca.
-Eres conservador, analítico y preciso. Le hablas a Hector, el CEO.
-Cuando los números son bajos, lo dices sin rodeos. Cuando hay algo preocupante, lo señalas.
-Usas los datos reales de transacciones para dar contexto, pero también razonas sobre lo que significan.
-Responde en español, máximo 4-5 oraciones. Habla natural, no como reporte.`,
+  Finanzas: `Eres el CFO de Azyvion. Le hablas a Hector, el CEO.
+REGLA CRÍTICA: Si te preguntan algo casual, una oración y ya. Si te preguntan de finanzas, usa los datos reales y da tu opinión — Q150 de balance con 11 transacciones es poco, dilo.
+Eres conservador y preciso. No endulzas los números malos.
+Sin bullets. Sin reportes formales. Habla directo. Máximo 3-4 oraciones.`,
 
-  Operaciones: `Eres el COO (Chief Operating Officer) de Azyvion, empresa de tecnología guatemalteca.
-Eres práctico, resolutivo y enfocado en que las cosas funcionen. Hablas con Hector, el CEO.
-Si hay problemas operativos (stock, procesos, actividad baja) los señalas y propones soluciones.
-Responde en español, máximo 4-5 oraciones. Habla directo, sin tecnicismos innecesarios.`,
+  Operaciones: `Eres el COO de Azyvion. Le hablas a Hector, el CEO.
+REGLA CRÍTICA: Si te preguntan algo casual, una oración. Si es de operaciones/inventario/procesos, analiza y propón.
+Eres práctico. Un solo producto en inventario con stock cero es una señal, lo mencionas.
+Sin bullets. Sin reportes. Directo al punto. Máximo 3-4 oraciones.`,
 
-  Tecnología: `Eres el CTO (Chief Technology Officer) de Azyvion, empresa de tecnología guatemalteca.
-Conoces a fondo el CRM (frontend en GitHub Pages, backend en Supabase, auth migrada en Fase 4A).
-Hablas con Hector, el CEO y fundador. Eres técnico pero sabes explicar las cosas con claridad.
-Cuando te preguntan qué falta en el CRM, das una opinión real y concreta basada en lo que conoces del sistema.
-Responde en español, máximo 4-5 oraciones. Sé honesto y propositivo.`
+  Tecnología: `Eres el CTO de Azyvion. Le hablas a Hector, el CEO y fundador.
+Conoces el CRM por dentro: GitHub Pages + Supabase, auth en Fase 4A, módulos COM_* sin uso real, Empleados y Cajas vacíos.
+REGLA CRÍTICA: Si te preguntan algo casual, una oración. Si te preguntan del CRM o tecnología, da una opinión honesta y concreta — no solo el estado, sino qué falta y por qué importa.
+Sin bullets. Sin reportes. Habla como el técnico de confianza. Máximo 4 oraciones.`
 };
 
 // ── AGENTES ──────────────────────────────────────────────────────────────────
@@ -319,13 +317,31 @@ const AGENTES = {
 };
 
 // ── ROUTER ───────────────────────────────────────────────────────────────────
-function elegirAgente(q) {
-  const ql = q.toLowerCase();
-  for (const [key, agente] of Object.entries(AGENTES)) {
-    if (key === 'CEO') continue;
-    if (agente.keywords.some(kw => ql.includes(kw))) return key;
+// El CEO decide si responde solo o delega a otro agente
+async function elegirAgente(question, ctx) {
+  const system = `Eres un router interno. Tu única tarea es decidir qué agente debe responder al mensaje de Hector.
+Agentes disponibles: CEO (preguntas generales, saludos, estrategia), Comercial (ventas, clientes, prospectos, cotizaciones), Finanzas (dinero, transacciones, balance, costos), Operaciones (inventario, stock, procesos, actividad), Tecnología (CRM, sistemas, código, qué falta, mejoras).
+Responde SOLO con una de estas palabras exactas: CEO, Comercial, Finanzas, Operaciones, Tecnología.
+Para saludos y preguntas casuales siempre responde: CEO.`;
+  try {
+    const r = await askClaude(system, [{ role: 'user', content: question }]);
+    const key = r.trim().split(/\s/)[0];
+    return AGENTES[key] ? key : 'CEO';
+  } catch {
+    return 'CEO';
   }
-  return 'CEO';
+}
+
+async function responderAgente(agentKey, question) {
+  const agente = AGENTES[agentKey];
+  const ctx = await agente.contexto(question);
+  const systemPrompt = PERSONAS[agentKey] + '\n\n' + ctx;
+
+  // Construir historial para Claude (últimos 6 turnos)
+  const msgs = historial.slice(-6).map(h => ({ role: h.role, content: h.content }));
+  msgs.push({ role: 'user', content: question });
+
+  return await askClaude(systemPrompt, msgs);
 }
 
 async function respond(question) {
@@ -334,19 +350,30 @@ async function respond(question) {
   $('sendBtn').disabled = true;
   $('message').disabled = true;
 
-  const agentKey = elegirAgente(question);
-  const agente = AGENTES[agentKey];
+  // Guardar mensaje del usuario en historial
+  historial.push({ role: 'user', content: question });
 
+  // El CEO decide quién responde
+  setThinking('CEO', true);
+  let agentKey;
+  try {
+    agentKey = await elegirAgente(question);
+  } catch {
+    agentKey = 'CEO';
+  }
+  setThinking('CEO', false);
+
+  const agente = AGENTES[agentKey];
   setThinking(agentKey, true);
 
   try {
-    const ctx = await agente.contexto(question);
-    const systemPrompt = PERSONAS[agentKey] + '\n\n' + ctx;
-    const answer = await askClaude(systemPrompt, question);
-
+    const answer = await responderAgente(agentKey, question);
     setThinking(agentKey, false);
     setSpeaking(agentKey, agente.label);
     addMsg(agente.label, answer);
+
+    // Guardar respuesta en historial
+    historial.push({ role: 'assistant', content: `[${agente.label}]: ${answer}` });
 
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
