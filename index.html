@@ -1,35 +1,805 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Azyvion · Sala de equipo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azyvion — Autonomous AI Ops</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:dark;--bg:#080a0f;--panel:#11141d;--panel2:#171b27;--line:#282d40;--text:#e8ebf5;--muted:#8990aa;--blue:#5680ff;--green:#31cf83;--amber:#ffc15b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}button,input{font:inherit}button{cursor:pointer;color:inherit}.app{min-height:100vh;display:grid;grid-template-rows:58px 1fr 82px}.top{display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--line);background:#0d1017}.brand{font-weight:700;letter-spacing:.2px}.brand b{display:inline-grid;place-items:center;background:var(--blue);width:29px;height:29px;border-radius:8px;margin-right:9px}.meeting-info{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px}.live{color:var(--green);font-family:monospace}.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;min-height:0}.stage{padding:25px;display:flex;flex-direction:column;gap:18px;min-width:0}.heading{display:flex;justify-content:space-between;align-items:flex-start}.heading h1{font-size:21px;margin:0 0 4px}.heading p{margin:0;color:var(--muted);font-size:12px}.demo{font-size:11px;color:var(--amber);border:1px solid #624b25;border-radius:20px;padding:5px 10px}.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;flex:1;align-content:start}.tile{position:relative;min-height:190px;aspect-ratio:16/10;background:linear-gradient(145deg,#1b2030,#10131c);border:1px solid var(--line);border-radius:13px;overflow:hidden;display:flex;align-items:center;justify-content:center}.tile.speaking{border-color:var(--blue);box-shadow:0 0 0 1px #5680ff55}.tile video{width:100%;height:100%;object-fit:cover;display:none;transform:scaleX(-1)}.avatar{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-size:33px;background:#27324e;border:1px solid #3a4c77}.you .avatar{display:none}.tile-label{position:absolute;bottom:10px;left:11px;background:#090b11cc;padding:5px 9px;border-radius:7px;font-size:12px}.tile-status{position:absolute;top:10px;right:10px;color:var(--muted);font-size:10px;background:#090b11b8;padding:4px 7px;border-radius:6px}.side{border-left:1px solid var(--line);background:#0d1017;display:flex;flex-direction:column;min-height:0}.side-head{padding:17px;border-bottom:1px solid var(--line);font-weight:600}.transcript{flex:1;overflow:auto;padding:14px}.empty{text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:35px 10px}.bubble{margin:0 0 13px;font-size:12px;line-height:1.5}.who{font-size:10px;color:var(--blue);font-weight:700;margin-bottom:4px}.bubble.you-msg .who{color:var(--green)}.entry{padding:12px;border-top:1px solid var(--line);display:flex;gap:7px}.entry input{min-width:0;flex:1;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:8px;padding:10px}.send{border:0;background:var(--blue);border-radius:8px;padding:0 13px}.controls{display:flex;align-items:center;justify-content:center;gap:11px;border-top:1px solid var(--line);background:#0d1017}.ctrl{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);font-size:17px}.ctrl:hover{border-color:var(--blue)}.ctrl.off{background:#5d2027;border-color:#9b343e}.ctrl.end{background:#d83e4a;border:0;width:56px;border-radius:17px}.hint{color:var(--muted);font-size:11px;margin-left:12px}.toast{position:fixed;bottom:95px;left:50%;transform:translateX(-50%);padding:10px 15px;border:1px solid var(--line);border-radius:9px;background:#171b27;display:none;font-size:12px;z-index:5}.toast.show{display:block}@media(max-width:900px){.layout{grid-template-columns:1fr}.side{height:280px;border-left:0;border-top:1px solid var(--line)}.app{grid-template-rows:58px auto 76px}.stage{padding:16px}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tile{min-height:130px}}@media(max-width:520px){.tiles{grid-template-columns:1fr 1fr;gap:8px}.tile{min-height:115px}.heading{gap:8px}.hint{display:none}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080a0f;--bg1:#0d0f15;--bg2:#12141c;--bg3:#181a24;--bg4:#1e2030;
+  --border:#22263a;--border2:#2e3350;
+  --text:#dde1f0;--text2:#7c82a0;--text3:#454a66;
+  --accent:#4f7fff;--accent2:#1a3a8f;
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.08);
+  --amber:#f59e0b;--amber-bg:rgba(245,158,11,0.08);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.08);
+  --purple:#a855f7;--purple-bg:rgba(168,85,247,0.08);
+  --teal:#14b8a6;--teal-bg:rgba(20,184,166,0.08);
+  --coral:#f97316;--coral-bg:rgba(249,115,22,0.08);
+  --r:8px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:50px;background:var(--bg1);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.logo-mark{width:28px;height:28px;background:var(--accent);border-radius:6px;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.room-link{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;color:var(--text);text-decoration:none;font-size:11px;background:var(--bg2)}
+.room-link:hover{border-color:var(--accent);color:#fff}
+.live-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-family:var(--mono);color:var(--green);background:var(--green-bg);padding:3px 9px;border-radius:10px;border:1px solid rgba(34,197,94,0.2)}
+.dot-anim{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.clock{font-size:12px;color:var(--text3);font-family:var(--mono)}
+.unread-badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:200px 1fr 280px;min-height:calc(100vh - 50px)}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg1);border-right:1px solid var(--border);padding:12px 0;overflow-y:auto;height:calc(100vh - 50px);position:sticky;top:50px}
+.nav-section{margin-bottom:4px}
+.nav-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:0.7px;text-transform:uppercase;padding:8px 14px 3px}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;color:var(--text2);font-size:12px;border:none;background:transparent;width:100%;text-align:left;transition:all 0.12s;position:relative}
+.nav-btn:hover{background:var(--bg2);color:var(--text)}
+.nav-btn.active{background:var(--bg3);color:var(--text);border-left:2px solid var(--accent)}
+.nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.nav-count{margin-left:auto;font-size:10px;font-family:var(--mono);color:var(--text3);background:var(--bg3);padding:1px 5px;border-radius:8px}
+.nav-count.alert{background:var(--red-bg);color:var(--red)}
+.agent-pulse{width:7px;height:7px;border-radius:50%;flex-shrink:0;position:relative}
+.agent-pulse.active{background:var(--green)}
+.agent-pulse.active::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:1px solid var(--green);animation:ripple 2s infinite;opacity:0}
+.agent-pulse.busy{background:var(--amber)}
+@keyframes ripple{0%{transform:scale(0.8);opacity:0.6}100%{transform:scale(2.2);opacity:0}}
+
+/* MAIN */
+.main{padding:20px;overflow-y:auto;height:calc(100vh - 50px)}
+.page{display:none}.page.active{display:block}
+.page-hdr{margin-bottom:18px}
+.page-title{font-size:19px;font-weight:600;letter-spacing:-0.3px;margin-bottom:3px}
+.page-sub{color:var(--text2);font-size:12px}
+
+/* RIGHT PANEL */
+.right-panel{background:var(--bg1);border-left:1px solid var(--border);overflow-y:auto;height:calc(100vh - 50px);position:sticky;top:50px;display:flex;flex-direction:column}
+.rpanel-tab{display:flex;border-bottom:1px solid var(--border)}
+.rtab{flex:1;padding:10px 0;font-size:11px;font-weight:600;text-align:center;cursor:pointer;color:var(--text3);border:none;background:transparent;transition:all 0.12s;text-transform:uppercase;letter-spacing:0.5px;position:relative}
+.rtab.active{color:var(--text);border-bottom:2px solid var(--accent)}
+.rtab-content{display:none;flex:1;overflow-y:auto;padding:12px}.rtab-content.active{display:block}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.card-title{font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+
+/* METRIC ROW */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.m-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px}
+.m-val{font-size:20px;font-weight:600;font-family:var(--mono);letter-spacing:-0.5px}
+.m-sub{font-size:10px;margin-top:3px}
+.up{color:var(--green)}.warn{color:var(--amber)}.muted{color:var(--text3)}
+
+/* DEPT GRID */
+.dept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.dept-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:border-color 0.15s;position:relative;overflow:hidden}
+.dept-card:hover{border-color:var(--border2)}
+.dept-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.dc-coo::before{background:var(--green)}.dc-cto::before{background:var(--purple)}
+.dc-cpo::before{background:var(--coral)}.dc-cro::before{background:var(--red)}
+.dc-cmo::before{background:var(--teal)}.dc-cfo::before{background:var(--amber)}
+.dc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.dc-title{font-size:13px;font-weight:600}.dc-role{font-size:10px;color:var(--text3);margin-top:1px}
+.dc-icon{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font-size:14px;flex-shrink:0}
+.ic-coo{background:var(--green-bg);color:var(--green)}.ic-cto{background:var(--purple-bg);color:var(--purple)}
+.ic-cpo{background:var(--coral-bg);color:var(--coral)}.ic-cro{background:var(--red-bg);color:var(--red)}
+.ic-cmo{background:var(--teal-bg);color:var(--teal)}.ic-cfo{background:var(--amber-bg);color:var(--amber)}
+.dc-status{font-size:10px;font-family:var(--mono);display:flex;align-items:center;gap:5px;margin-bottom:8px;color:var(--text3)}
+.dc-thinking{color:var(--amber)}.dc-active{color:var(--green)}
+.dc-stats{display:flex;gap:10px}
+.dc-stat{text-align:center;flex:1}
+.dc-sval{font-size:14px;font-weight:600;font-family:var(--mono)}
+.dc-slbl{font-size:9px;color:var(--text3);margin-top:1px;text-transform:uppercase}
+.progress{height:2px;background:var(--border);border-radius:1px;margin-top:8px;overflow:hidden}
+.progress-fill{height:100%;border-radius:1px;transition:width 1.5s ease}
+
+/* FEED / MESSAGES */
+.feed{display:flex;flex-direction:column;gap:0}
+.feed-item{padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:10px}
+.feed-item:last-child{border-bottom:none}
+.feed-avatar{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;font-size:12px;flex-shrink:0;font-weight:600}
+.feed-body{flex:1;min-width:0}
+.feed-name{font-size:11px;font-weight:600;margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.feed-text{font-size:12px;color:var(--text2);line-height:1.45}
+.feed-time{font-size:10px;color:var(--text3);white-space:nowrap;margin-left:auto}
+.feed-tag{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;letter-spacing:0.3px}
+.tag-report{background:var(--green-bg);color:var(--green)}
+.tag-alert{background:var(--amber-bg);color:var(--amber)}
+.tag-meeting{background:var(--purple-bg);color:var(--purple)}
+.tag-urgent{background:var(--red-bg);color:var(--red)}
+
+/* MEETING ROOM */
+.meeting-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.meeting-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.meeting-title{font-size:13px;font-weight:600}
+.meeting-attendees{display:flex;gap:-4px;margin-bottom:8px}
+.attendee-chip{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;border:1px solid var(--border2);background:var(--bg2);margin-right:4px}
+.meeting-log{background:var(--bg);border-radius:5px;padding:8px 10px;font-family:var(--mono);font-size:10px;max-height:120px;overflow-y:auto}
+.mlog-line{padding:2px 0;border-bottom:1px solid var(--bg2);display:flex;gap:6px}
+.mlog-line:last-child{border:none}
+.mlog-who{font-weight:600;min-width:60px;flex-shrink:0}
+.mlog-msg{color:var(--text2)}
+
+/* CHAT */
+.chat-wrap{display:flex;flex-direction:column;height:100%}
+.chat-dept-select{display:flex;gap:6px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--border)}
+.dept-pill{font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all 0.12s}
+.dept-pill:hover{border-color:var(--accent);color:var(--accent)}
+.dept-pill.active{background:var(--accent2);border-color:var(--accent);color:#fff}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:200px}
+.msg{max-width:88%;padding:7px 10px;border-radius:7px;font-size:12px;line-height:1.45}
+.msg.ai{background:var(--bg3);color:var(--text);align-self:flex-start;border-bottom-left-radius:2px}
+.msg.user{background:var(--accent2);color:#fff;align-self:flex-end;border-bottom-right-radius:2px}
+.msg-label{font-size:10px;font-weight:600;margin-bottom:3px;color:var(--text3)}
+.thinking{display:flex;gap:3px;align-items:center;padding:7px 10px;background:var(--bg3);border-radius:7px;align-self:flex-start}
+.thinking span{width:4px;height:4px;border-radius:50%;background:var(--accent);animation:think 1s infinite}
+.thinking span:nth-child(2){animation-delay:.18s}.thinking span:nth-child(3){animation-delay:.36s}
+@keyframes think{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+.chat-input-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:7px}
+.chat-input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;font-family:var(--font)}
+.chat-input:focus{outline:none;border-color:var(--accent)}
+.send-btn{padding:7px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;cursor:pointer;font-family:var(--font);font-weight:500}
+.send-btn:hover{background:var(--accent2)}.send-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* LOG */
+.log-box{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-family:var(--mono);font-size:10px;max-height:140px;overflow-y:auto}
+.log-line{display:flex;gap:7px;padding:2px 0;border-bottom:1px solid var(--bg2)}
+.log-line:last-child{border:none}
+.lt{color:var(--text3);flex-shrink:0;width:55px}.lk{width:40px;flex-shrink:0}
+.lk.ok{color:var(--green)}.lk.info{color:var(--accent)}.lk.warn{color:var(--amber)}.lk.err{color:var(--red)}
+.lm{color:var(--text2)}
+
+/* BARS */
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bar-lbl{width:72px;font-size:10px;color:var(--text2);text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:14px;background:var(--bg3);border-radius:3px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:3px;transition:width 1.5s ease}
+.bar-val{font-size:9px;color:var(--text);font-family:var(--mono);position:absolute;right:5px;top:50%;transform:translateY(-50%)}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;padding:6px 10px;border-bottom:1px solid var(--border);text-align:left}
+.tbl td{padding:7px 10px;border-bottom:1px solid var(--border);font-size:12px}
+.tbl tr:last-child td{border:none}
+.tbl tr:hover td{background:var(--bg3)}
+
+/* TAGS */
+.tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;letter-spacing:0.3px}
+.tg{background:var(--green-bg);color:var(--green)}.ta{background:var(--amber-bg);color:var(--amber)}
+.tr{background:var(--red-bg);color:var(--red)}.tb{background:rgba(79,127,255,0.1);color:var(--accent)}
+
+/* ACTIONS */
+.action-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.abtn{padding:5px 11px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;transition:all 0.12s;font-family:var(--font)}
+.abtn:hover{border-color:var(--accent);color:var(--accent);background:rgba(79,127,255,0.05)}
+.abtn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.abtn.primary:hover{background:#3a6eef}
+
+/* SUB AREAS */
+.sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.sub{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px}
+.sub-title{font-size:11px;font-weight:600;margin-bottom:6px}
+.task-li{font-size:11px;color:var(--text2);padding:3px 0;display:flex;align-items:flex-start;gap:6px}
+.task-li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:4px}
+.task-li.proc::before{background:var(--amber);animation:blink 1.5s infinite}
+.task-li.warn::before{background:var(--red)}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.kpi{background:var(--bg3);border-radius:6px;padding:10px;text-align:center}
+.kpi-val{font-size:17px;font-weight:600;font-family:var(--mono)}
+.kpi-lbl{font-size:9px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
+
+.section-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ticker-g{color:var(--green);font-family:var(--mono)}
+.ticker-a{color:var(--amber);font-family:var(--mono)}
+.ticker-r{color:var(--red);font-family:var(--mono)}
+
+.autonomous-banner{background:linear-gradient(135deg,rgba(79,127,255,0.08),rgba(168,85,247,0.08));border:1px solid rgba(79,127,255,0.2);border-radius:var(--r);padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text2)}
+.auto-icon{font-size:18px}
+
+.spinner{display:inline-block;width:10px;height:10px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.report-indicator{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--green);animation:ripple 2s infinite}
 </style>
 </head>
-<body><div class="app">
-<header class="top"><div class="brand"><b>A</b>Azyvion <span style="font-weight:400;color:#8990aa">· Sala de equipo</span></div><div class="meeting-info"><span class="live">● SALA ABIERTA</span><span id="clock"></span></div></header>
-<div class="layout"><main class="stage"><div class="heading"><div><h1>Reunión de equipo</h1><p>Pregunta cómo van y conversa con tus agentes.</p></div><span class="demo">Prototipo · respuestas de demostración</span></div>
-<section class="tiles" id="tiles">
-<div class="tile you" id="youTile"><video id="camera" autoplay playsinline muted></video><div class="avatar">🙂</div><span class="tile-label">Tú</span><span class="tile-status" id="youStatus">Cámara apagada</span></div>
-<div class="tile" data-agent="CEO"><div class="avatar">◎</div><span class="tile-label">CEO · Orquestador</span><span class="tile-status">Listo para hablar</span></div>
-<div class="tile" data-agent="Operaciones"><div class="avatar">⚙</div><span class="tile-label">COO · Operaciones</span><span class="tile-status">Listo para hablar</span></div>
-<div class="tile" data-agent="Tecnología"><div class="avatar">⌘</div><span class="tile-label">CTO · Tecnología</span><span class="tile-status">Listo para hablar</span></div>
-<div class="tile" data-agent="Comercial"><div class="avatar">🤝</div><span class="tile-label">CRO · Comercial</span><span class="tile-status">Listo para hablar</span></div>
-<div class="tile" data-agent="Finanzas"><div class="avatar">⊕</div><span class="tile-label">CFO · Finanzas</span><span class="tile-status">Listo para hablar</span></div>
-</section></main>
-<aside class="side"><div class="side-head">Conversación <span style="color:#8990aa;font-size:11px;font-weight:400">· notas en esta sesión</span></div><div class="transcript" id="transcript"><div class="empty" id="empty">La conversación aparecerá aquí.<br>Escribe un mensaje o activa el micrófono.</div></div><form class="entry" id="form"><input id="message" placeholder="Pregunta cómo va el equipo…" autocomplete="off"><button class="send" aria-label="Enviar">➤</button></form></aside></div>
-<footer class="controls"><button class="ctrl" id="mic" title="Activar micrófono">🎙</button><button class="ctrl" id="cam" title="Activar cámara">▣</button><button class="ctrl end" id="end" title="Cerrar sala">☎</button><span class="hint" id="hint">Activa cámara o micrófono cuando quieras</span></footer></div><div class="toast" id="toast"></div>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">A</div>
+    <span>Azyvion <span style="font-weight:400;color:var(--text3)">Autonomous Ops</span></span>
+  </div>
+  <div class="topbar-right">
+    <a class="room-link" href="azyvion-sala.html" target="_blank" rel="noopener">▣ Sala de equipo ↗</a>
+    <div class="live-badge" style="color:var(--amber);background:var(--amber-bg);border-color:rgba(245,158,11,.2)">Panel de demostración</div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-section">
+      <div class="nav-lbl">Control</div>
+      <button class="nav-btn active" onclick="showPage('overview',this)">
+        <span class="agent-pulse active"></span>Vista general
+      </button>
+      <button class="nav-btn" onclick="showPage('meetings',this)">
+        <span class="agent-pulse busy"></span>Sala de reuniones
+        <span class="nav-count alert" id="meeting-count">0</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-lbl">Departamentos</div>
+      <button class="nav-btn" onclick="showPage('coo',this)"><span class="agent-pulse active" style="background:var(--green)"></span>Operaciones</button>
+      <button class="nav-btn" onclick="showPage('cto',this)"><span class="agent-pulse busy" style="background:var(--purple)"></span>Tecnología<span class="nav-count" id="nb-cto">0</span></button>
+      <button class="nav-btn" onclick="showPage('cpo',this)"><span class="agent-pulse active" style="background:var(--coral)"></span>Producto</button>
+      <button class="nav-btn" onclick="showPage('cro',this)"><span class="agent-pulse active" style="background:var(--red)"></span>Comercial<span class="nav-count alert" id="nb-cro">0</span></button>
+      <button class="nav-btn" onclick="showPage('cmo',this)"><span class="agent-pulse busy" style="background:var(--teal)"></span>Marketing</button>
+      <button class="nav-btn" onclick="showPage('cfo',this)"><span class="agent-pulse active" style="background:var(--amber)"></span>Finanzas</button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-lbl">Ejecutivo</div>
+      <button class="nav-btn" onclick="showPage('ceo',this)"><span class="agent-pulse active"></span>CEO / Dirección</button>
+    </div>
+    <div style="padding:12px 14px;margin-top:8px;border-top:1px solid var(--border)">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Ciclo autónomo</div>
+      <div style="font-size:11px;color:var(--text2);font-family:var(--mono)" id="cycle-timer">próximo en --s</div>
+      <div style="height:3px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden"><div id="cycle-bar" style="height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width 0.5s linear"></div></div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <div class="page active" id="page-overview">
+      <div class="page-hdr">
+        <div class="page-title">Centro de operaciones autónomo</div>
+        <div class="page-sub">Vista general de departamentos · cifras y actividad de demostración</div>
+      </div>
+      <div class="autonomous-banner">
+        <span class="auto-icon">🤖</span>
+        <span>Esta interfaz conserva el diseño del índice adjunto. Las cifras y los reportes que aparecen son de demostración; todavía no reflejan el estado real de tu negocio.</span>
+      </div>
+      <div class="metrics">
+        <div class="metric"><div class="m-lbl">Reportes hoy</div><div class="m-val ticker-g" id="m-reports">0</div><div class="m-sub muted">generados por agentes</div></div>
+        <div class="metric"><div class="m-lbl">Alertas activas</div><div class="m-val ticker-a" id="m-alerts">0</div><div class="m-sub warn">requieren atención</div></div>
+        <div class="metric"><div class="m-lbl">Reuniones IA</div><div class="m-val ticker-g" id="m-meetings">0</div><div class="m-sub muted">cross-dept completadas</div></div>
+        <div class="metric"><div class="m-lbl">Decisiones asistidas</div><div class="m-val ticker-g" id="m-decisions">0</div><div class="m-sub up">↑ acumuladas</div></div>
+      </div>
+
+      <div class="section-lbl">Estado de agentes</div>
+      <div class="dept-grid">
+        <div class="dept-card dc-coo" onclick="showPage('coo',null)">
+          <div class="dc-head"><div><div class="dc-title">COO · Operaciones</div><div class="dc-role">agent-ops-v2</div></div><div class="dc-icon ic-coo">⚙</div></div>
+          <div class="dc-status dc-active" id="st-coo"><span class="dot-anim" style="color:var(--green)"></span>activo</div>
+          <div class="dc-stats">
+            <div class="dc-stat"><div class="dc-sval ticker-g" id="sv-coo-1">0</div><div class="dc-slbl">tareas</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-coo-2">99%</div><div class="dc-slbl">éxito</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-coo-3">0</div><div class="dc-slbl">reportes</div></div>
+          </div>
+          <div class="progress"><div class="progress-fill" id="pb-coo" style="background:var(--green);width:0%"></div></div>
+        </div>
+        <div class="dept-card dc-cto" onclick="showPage('cto',null)">
+          <div class="dc-head"><div><div class="dc-title">CTO · Tecnología</div><div class="dc-role">agent-tech-v3</div></div><div class="dc-icon ic-cto">⟨/⟩</div></div>
+          <div class="dc-status dc-active" id="st-cto"><span class="dot-anim" style="color:var(--purple)"></span>activo</div>
+          <div class="dc-stats">
+            <div class="dc-stat"><div class="dc-sval ticker-g" id="sv-cto-1">0</div><div class="dc-slbl">commits</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-cto-2">96%</div><div class="dc-slbl">cobertura</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-cto-3">0</div><div class="dc-slbl">reportes</div></div>
+          </div>
+          <div class="progress"><div class="progress-fill" id="pb-cto" style="background:var(--purple);width:0%"></div></div>
+        </div>
+        <div class="dept-card dc-cpo" onclick="showPage('cpo',null)">
+          <div class="dc-head"><div><div class="dc-title">CPO · Producto</div><div class="dc-role">agent-product-v2</div></div><div class="dc-icon ic-cpo">◈</div></div>
+          <div class="dc-status dc-active" id="st-cpo"><span class="dot-anim" style="color:var(--coral)"></span>activo</div>
+          <div class="dc-stats">
+            <div class="dc-stat"><div class="dc-sval ticker-g" id="sv-cpo-1">0</div><div class="dc-slbl">insights</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-cpo-2">97%</div><div class="dc-slbl">prioridad</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-cpo-3">0</div><div class="dc-slbl">reportes</div></div>
+          </div>
+          <div class="progress"><div class="progress-fill" id="pb-cpo" style="background:var(--coral);width:0%"></div></div>
+        </div>
+        <div class="dept-card dc-cro" onclick="showPage('cro',null)">
+          <div class="dc-head"><div><div class="dc-title">CRO · Comercial</div><div class="dc-role">agent-sales-v4</div></div><div class="dc-icon ic-cro">🤝</div></div>
+          <div class="dc-status dc-active" id="st-cro"><span class="dot-anim" style="color:var(--red)"></span>activo</div>
+          <div class="dc-stats">
+            <div class="dc-stat"><div class="dc-sval ticker-g" id="sv-cro-1">$0</div><div class="dc-slbl">pipeline</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-cro-2">34%</div><div class="dc-slbl">conv.</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-cro-3">0</div><div class="dc-slbl">reportes</div></div>
+          </div>
+          <div class="progress"><div class="progress-fill" id="pb-cro" style="background:var(--red);width:0%"></div></div>
+        </div>
+        <div class="dept-card dc-cmo" onclick="showPage('cmo',null)">
+          <div class="dc-head"><div><div class="dc-title">CMO · Marketing</div><div class="dc-role">agent-mkt-v2</div></div><div class="dc-icon ic-cmo">📢</div></div>
+          <div class="dc-status dc-active" id="st-cmo"><span class="dot-anim" style="color:var(--teal)"></span>activo</div>
+          <div class="dc-stats">
+            <div class="dc-stat"><div class="dc-sval ticker-g" id="sv-cmo-1">0</div><div class="dc-slbl">campañas</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-cmo-2">4.2x</div><div class="dc-slbl">ROAS</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-cmo-3">0</div><div class="dc-slbl">reportes</div></div>
+          </div>
+          <div class="progress"><div class="progress-fill" id="pb-cmo" style="background:var(--teal);width:0%"></div></div>
+        </div>
+        <div class="dept-card dc-cfo" onclick="showPage('cfo',null)">
+          <div class="dc-head"><div><div class="dc-title">CFO · Finanzas</div><div class="dc-role">agent-finance-v2</div></div><div class="dc-icon ic-cfo">⊕</div></div>
+          <div class="dc-status dc-active" id="st-cfo"><span class="dot-anim" style="color:var(--amber)"></span>activo</div>
+          <div class="dc-stats">
+            <div class="dc-stat"><div class="dc-sval ticker-g" id="sv-cfo-1">$0</div><div class="dc-slbl">monitoreado</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-cfo-2">99.9%</div><div class="dc-slbl">precisión</div></div>
+            <div class="dc-stat"><div class="dc-sval" id="sv-cfo-3">0</div><div class="dc-slbl">reportes</div></div>
+          </div>
+          <div class="progress"><div class="progress-fill" id="pb-cfo" style="background:var(--amber);width:0%"></div></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="section-lbl">Log global de actividad</div>
+          <div class="log-box" id="global-log"><div class="log-line"><span class="lt">--:--:--</span><span class="lk info">[INFO]</span><span class="lm">Iniciando agentes autónomos...</span></div></div>
+        </div>
+        <div>
+          <div class="section-lbl">Carga por agente</div>
+          <div id="load-bars">
+            <div class="bar-row"><span class="bar-lbl">Ops</span><div class="bar-track"><div class="bar-fill" id="lb-coo" style="background:var(--green);width:0%"><span class="bar-val" id="lbv-coo">0%</span></div></div></div>
+            <div class="bar-row"><span class="bar-lbl">Tecnología</span><div class="bar-track"><div class="bar-fill" id="lb-cto" style="background:var(--purple);width:0%"><span class="bar-val" id="lbv-cto">0%</span></div></div></div>
+            <div class="bar-row"><span class="bar-lbl">Producto</span><div class="bar-track"><div class="bar-fill" id="lb-cpo" style="background:var(--coral);width:0%"><span class="bar-val" id="lbv-cpo">0%</span></div></div></div>
+            <div class="bar-row"><span class="bar-lbl">Comercial</span><div class="bar-track"><div class="bar-fill" id="lb-cro" style="background:var(--red);width:0%"><span class="bar-val" id="lbv-cro">0%</span></div></div></div>
+            <div class="bar-row"><span class="bar-lbl">Marketing</span><div class="bar-track"><div class="bar-fill" id="lb-cmo" style="background:var(--teal);width:0%"><span class="bar-val" id="lbv-cmo">0%</span></div></div></div>
+            <div class="bar-row"><span class="bar-lbl">Finanzas</span><div class="bar-track"><div class="bar-fill" id="lb-cfo" style="background:var(--amber);width:0%"><span class="bar-val" id="lbv-cfo">0%</span></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEETINGS -->
+    <div class="page" id="page-meetings">
+      <div class="page-hdr"><div class="page-title">Sala de reuniones — IA</div><div class="page-sub">Los agentes se convocan automáticamente cuando detectan temas cross-departamento</div></div>
+      <div id="meeting-list"><div style="color:var(--text3);font-size:13px;padding:20px 0">Esperando primera reunión autónoma...</div></div>
+    </div>
+
+    <!-- COO -->
+    <div class="page" id="page-coo">
+      <div class="page-hdr"><div style="display:flex;align-items:center;gap:10px"><div class="dc-icon ic-coo" style="width:36px;height:36px;font-size:18px">⚙</div><div><div class="page-title">COO · Operaciones</div><div class="page-sub" id="coo-status-line">agent-ops-v2 · activo</div></div></div></div>
+      <div class="kpi-row"><div class="kpi"><div class="kpi-val ticker-g" id="k-coo-1">0</div><div class="kpi-lbl">Tareas hoy</div></div><div class="kpi"><div class="kpi-val">47</div><div class="kpi-lbl">Órdenes</div></div><div class="kpi"><div class="kpi-val ticker-g">99%</div><div class="kpi-lbl">Éxito</div></div></div>
+      <div class="sub-grid">
+        <div class="sub"><div class="sub-title" style="color:var(--green)">Procesos</div><div class="task-li proc">Flujo aprobaciones optimizando</div><div class="task-li">SLA monitoreo activo</div><div class="task-li">KPIs actualizados</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--green)">Compras</div><div class="task-li">Órdenes Q4: 47/50</div><div class="task-li proc">Evaluando proveedores</div><div class="task-li">Ahorro: $12k</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--green)">Proveedores</div><div class="task-li">Score promedio: 8.4</div><div class="task-li warn">1 bajo SLA</div><div class="task-li">Contratos: 12</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--green)">Administración</div><div class="task-li proc">Reporte semanal activo</div><div class="task-li">Docs: 234 archivados</div><div class="task-li">Compliance 100%</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--green)">Facilities</div><div class="task-li">Accesos OK</div><div class="task-li">Incidencias: 0</div><div class="task-li">Mantenimiento programado</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--green)">Gestión interna</div><div class="task-li proc">Onboarding 2 personas</div><div class="task-li">Satisfacción: 9.1</div><div class="task-li">Políticas OK</div></div>
+      </div>
+      <div class="section-lbl">Reportes autónomos de Operaciones</div>
+      <div class="feed" id="feed-coo"><div style="color:var(--text3);font-size:12px;padding:10px 0">El agente reportará automáticamente...</div></div>
+    </div>
+
+    <!-- CTO -->
+    <div class="page" id="page-cto">
+      <div class="page-hdr"><div style="display:flex;align-items:center;gap:10px"><div class="dc-icon ic-cto" style="width:36px;height:36px;font-size:14px">⟨/⟩</div><div><div class="page-title">CTO · Tecnología</div><div class="page-sub">agent-tech-v3 · activo</div></div></div></div>
+      <div class="kpi-row"><div class="kpi"><div class="kpi-val ticker-g" id="k-cto-1">0</div><div class="kpi-lbl">Commits revisados</div></div><div class="kpi"><div class="kpi-val">12</div><div class="kpi-lbl">PRs activos</div></div><div class="kpi"><div class="kpi-val ticker-a">96%</div><div class="kpi-lbl">Cobertura</div></div></div>
+      <div class="sub-grid">
+        <div class="sub"><div class="sub-title" style="color:var(--purple)">Software Engineering</div><div class="task-li proc">Code review PR#284</div><div class="task-li">3 bugs cerrados</div><div class="task-li warn">Deuda técnica: 14</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--purple)">APIs & Integrations</div><div class="task-li">22 endpoints documentados</div><div class="task-li proc">Stripe v4 en staging</div><div class="task-li">Uptime: 99.97%</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--accent)">Cloud / DevOps</div><div class="task-li proc">Deploy staging activo</div><div class="task-li">K8s: 8 pods OK</div><div class="task-li">Costo: -8%</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--accent)">Data & AI</div><div class="task-li proc">Modelo ML 87% epoch</div><div class="task-li">ETL pipeline OK</div><div class="task-li">BI actualizado</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--red)">Cybersecurity</div><div class="task-li">Vulnerabilidades: 0</div><div class="task-li proc">Pentesting Q4</div><div class="task-li">IAM: OK</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--accent)">Mobile & Desktop</div><div class="task-li">v2.4.1 en review</div><div class="task-li proc">Build iOS staging</div><div class="task-li">Crashes: 0.02%</div></div>
+      </div>
+      <div class="section-lbl">Reportes autónomos de Tecnología</div>
+      <div class="feed" id="feed-cto"><div style="color:var(--text3);font-size:12px;padding:10px 0">El agente reportará automáticamente...</div></div>
+    </div>
+
+    <!-- CPO -->
+    <div class="page" id="page-cpo">
+      <div class="page-hdr"><div style="display:flex;align-items:center;gap:10px"><div class="dc-icon ic-cpo" style="width:36px;height:36px;font-size:18px">◈</div><div><div class="page-title">CPO · Producto</div><div class="page-sub">agent-product-v2 · activo</div></div></div></div>
+      <div class="kpi-row"><div class="kpi"><div class="kpi-val ticker-g" id="k-cpo-1">0</div><div class="kpi-lbl">Insights</div></div><div class="kpi"><div class="kpi-val">34</div><div class="kpi-lbl">Features</div></div><div class="kpi"><div class="kpi-val ticker-g">Q1 2025</div><div class="kpi-lbl">Roadmap</div></div></div>
+      <div class="sub-grid">
+        <div class="sub"><div class="sub-title" style="color:var(--coral)">Product Managers</div><div class="task-li proc">Backlog priorizando</div><div class="task-li">14 historias estimadas</div><div class="task-li">Velocity: 42 pts</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--coral)">Product Owners</div><div class="task-li">Criterios generados</div><div class="task-li proc">Sprint review activo</div><div class="task-li">DoD: 100%</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--coral)">Business Analysts</div><div class="task-li proc">Análisis NPS activo</div><div class="task-li">Reportes BI: 7</div><div class="task-li">Oportunidad: $200k</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--coral)">Research</div><div class="task-li">Entrevistas: 23</div><div class="task-li proc">Análisis competencia</div><div class="task-li">Insights: 12</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--coral)">Roadmap</div><div class="task-li">Q1: 18 features</div><div class="task-li proc">Actualización semanal</div><div class="task-li">Dependencias: 34</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--coral)">Strategy</div><div class="task-li proc">OKRs Q1 revisando</div><div class="task-li">Benchmark OK</div><div class="task-li">North Star: +8%</div></div>
+      </div>
+      <div class="section-lbl">Reportes autónomos de Producto</div>
+      <div class="feed" id="feed-cpo"><div style="color:var(--text3);font-size:12px;padding:10px 0">El agente reportará automáticamente...</div></div>
+    </div>
+
+    <!-- CRO -->
+    <div class="page" id="page-cro">
+      <div class="page-hdr"><div style="display:flex;align-items:center;gap:10px"><div class="dc-icon ic-cro" style="width:36px;height:36px;font-size:16px">🤝</div><div><div class="page-title">CRO · Comercial</div><div class="page-sub">agent-sales-v4 · activo</div></div></div></div>
+      <div class="kpi-row"><div class="kpi"><div class="kpi-val ticker-r">$1.2M</div><div class="kpi-lbl">Pipeline</div></div><div class="kpi"><div class="kpi-val">87</div><div class="kpi-lbl">Leads</div></div><div class="kpi"><div class="kpi-val ticker-g">34%</div><div class="kpi-lbl">Conversión</div></div></div>
+      <table class="tbl" style="margin-bottom:12px"><thead><tr><th>Empresa</th><th>Score</th><th>Etapa</th><th>Valor</th><th></th></tr></thead><tbody>
+        <tr><td>Acme Corp</td><td class="ticker-g">94</td><td>Propuesta</td><td>$80k</td><td><span class="tag tg">Hot</span></td></tr>
+        <tr><td>Tech Solutions</td><td class="ticker-g">87</td><td>Negociación</td><td>$45k</td><td><span class="tag ta">Warm</span></td></tr>
+        <tr><td>Global Corp MX</td><td class="ticker-a">72</td><td>Discovery</td><td>$120k</td><td><span class="tag tb">Activo</span></td></tr>
+        <tr><td>Innovatech</td><td class="ticker-g">91</td><td>Demo</td><td>$60k</td><td><span class="tag tg">Hot</span></td></tr>
+      </tbody></table>
+      <div class="section-lbl">Reportes autónomos de Comercial</div>
+      <div class="feed" id="feed-cro"><div style="color:var(--text3);font-size:12px;padding:10px 0">El agente reportará automáticamente...</div></div>
+    </div>
+
+    <!-- CMO -->
+    <div class="page" id="page-cmo">
+      <div class="page-hdr"><div style="display:flex;align-items:center;gap:10px"><div class="dc-icon ic-cmo" style="width:36px;height:36px;font-size:16px">📢</div><div><div class="page-title">CMO · Marketing</div><div class="page-sub">agent-mkt-v2 · activo</div></div></div></div>
+      <div class="kpi-row"><div class="kpi"><div class="kpi-val ticker-g" id="k-cmo-1">47</div><div class="kpi-lbl">Campañas</div></div><div class="kpi"><div class="kpi-val">4.2x</div><div class="kpi-lbl">ROAS</div></div><div class="kpi"><div class="kpi-val ticker-g">12.4k</div><div class="kpi-lbl">MQL/mes</div></div></div>
+      <div class="sub-grid">
+        <div class="sub"><div class="sub-title" style="color:var(--teal)">Branding</div><div class="task-li">Guidelines v3 OK</div><div class="task-li proc">Assets Q4</div><div class="task-li">Brand score: 78</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--teal)">Marketing digital</div><div class="task-li proc">Ajuste pujas SEM</div><div class="task-li warn">CTR bajo: 1.2%</div><div class="task-li">CPC: -22%</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--teal)">Contenido</div><div class="task-li proc">8 artículos activos</div><div class="task-li">SEO: 84/100</div><div class="task-li">Posts hoy: 4</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--teal)">Comunicación</div><div class="task-li">Newsletter: 24k</div><div class="task-li proc">PR release activo</div><div class="task-li">Open rate: 42%</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--teal)">Eventos</div><div class="task-li">Webinars: 2</div><div class="task-li proc">Evento Nov 15</div><div class="task-li">Registros: 340</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--teal)">Demanda</div><div class="task-li">MQL: 234/sem</div><div class="task-li proc">A/B landing activo</div><div class="task-li">Conv web: 4.8%</div></div>
+      </div>
+      <div class="section-lbl">Reportes autónomos de Marketing</div>
+      <div class="feed" id="feed-cmo"><div style="color:var(--text3);font-size:12px;padding:10px 0">El agente reportará automáticamente...</div></div>
+    </div>
+
+    <!-- CFO -->
+    <div class="page" id="page-cfo">
+      <div class="page-hdr"><div style="display:flex;align-items:center;gap:10px"><div class="dc-icon ic-cfo" style="width:36px;height:36px;font-size:18px">⊕</div><div><div class="page-title">CFO · Finanzas</div><div class="page-sub">agent-finance-v2 · activo</div></div></div></div>
+      <div class="kpi-row"><div class="kpi"><div class="kpi-val ticker-a">$4.8M</div><div class="kpi-lbl">Monitoreado</div></div><div class="kpi"><div class="kpi-val">312</div><div class="kpi-lbl">Transacciones</div></div><div class="kpi"><div class="kpi-val ticker-g">99.9%</div><div class="kpi-lbl">Precisión</div></div></div>
+      <div class="sub-grid">
+        <div class="sub"><div class="sub-title" style="color:var(--amber)">Planeación</div><div class="task-li proc">Forecast Q1 activo</div><div class="task-li">Budget vs real: +2.3%</div><div class="task-li">Escenarios: 3</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--amber)">Contabilidad</div><div class="task-li">Asientos: 156</div><div class="task-li proc">Cierre mensual</div><div class="task-li">Conciliación OK</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--amber)">Tesorería</div><div class="task-li">Cash flow: $1.2M</div><div class="task-li proc">Optimizando inv.</div><div class="task-li">Pagos: 24</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--amber)">Control costos</div><div class="task-li proc">Análisis por área</div><div class="task-li">Ahorro: $34k</div><div class="task-li">Alertas: 0</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--amber)">Análisis financiero</div><div class="task-li">EBITDA: 28%</div><div class="task-li proc">Reporte Q4</div><div class="task-li">ROI: 3.4x</div></div>
+        <div class="sub"><div class="sub-title" style="color:var(--amber)">Inversores</div><div class="task-li proc">Deck Q4 generando</div><div class="task-li">Board update OK</div><div class="task-li">Cap table OK</div></div>
+      </div>
+      <div class="section-lbl">Reportes autónomos de Finanzas</div>
+      <div class="feed" id="feed-cfo"><div style="color:var(--text3);font-size:12px;padding:10px 0">El agente reportará automáticamente...</div></div>
+    </div>
+
+    <!-- CEO -->
+    <div class="page" id="page-ceo">
+      <div class="page-hdr"><div class="page-title">CEO / Dirección General</div><div class="page-sub">Resumen ejecutivo generado automáticamente por el orquestador IA</div></div>
+      <div class="section-lbl">Briefing ejecutivo autónomo</div>
+      <div id="ceo-feed"><div style="color:var(--text3);font-size:13px;padding:20px 0">El orquestador generará el primer briefing ejecutivo en el próximo ciclo...</div></div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="rpanel-tab">
+      <button class="rtab active" onclick="switchRTab('inbox',this)">Bandeja <span id="inbox-count" class="unread-badge" style="display:none">0</span></button>
+      <button class="rtab" onclick="switchRTab('chat',this)">Chat IA</button>
+    </div>
+
+    <!-- INBOX -->
+    <div class="rtab-content active" id="rtab-inbox">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Reportes espontáneos de jefes de área</div>
+      <div id="inbox-feed"><div style="color:var(--text3);font-size:12px;padding:10px 0;line-height:1.6">Los agentes están iniciando...<br>Los reportes aparecerán aquí automáticamente sin que tengas que pedirlos.</div></div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="rtab-content" id="rtab-chat">
+      <div class="chat-dept-select">
+        <button class="dept-pill active" data-key="ceo" onclick="selectChatAgent(this)">CEO</button>
+        <button class="dept-pill" data-key="coo" onclick="selectChatAgent(this)">COO</button>
+        <button class="dept-pill" data-key="cto" onclick="selectChatAgent(this)">CTO</button>
+        <button class="dept-pill" data-key="cpo" onclick="selectChatAgent(this)">CPO</button>
+        <button class="dept-pill" data-key="cro" onclick="selectChatAgent(this)">CRO</button>
+        <button class="dept-pill" data-key="cmo" onclick="selectChatAgent(this)">CMO</button>
+        <button class="dept-pill" data-key="cfo" onclick="selectChatAgent(this)">CFO</button>
+      </div>
+      <div class="chat-msgs" id="chat-msgs"></div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" placeholder="Pregunta al agente..." onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendChat()">
+        <button class="send-btn" id="send-btn" onclick="sendChat()">→</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 <script>
-const $=id=>document.getElementById(id);let stream=null,micOn=false,camOn=false,recognition=null;const transcript=$('transcript');
-function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
-function addMsg(who,text,you=false){$('empty')?.remove();const d=document.createElement('div');d.className='bubble'+(you?' you-msg':'');const n=document.createElement('div');n.className='who';n.textContent=who;const b=document.createElement('div');b.textContent=text;d.append(n,b);transcript.append(d);transcript.scrollTop=transcript.scrollHeight}
-async function ensureMedia(){if(stream)return stream;stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});stream.getTracks().forEach(t=>t.enabled=false);$('camera').srcObject=stream;return stream}
-$('cam').onclick=async()=>{try{await ensureMedia();camOn=!camOn;stream.getVideoTracks().forEach(t=>t.enabled=camOn);$('camera').style.display=camOn?'block':'none';$('youStatus').textContent=camOn?'Cámara activa':'Cámara apagada';$('cam').classList.toggle('off',!camOn);$('hint').textContent=camOn?'Tu cámara está visible solo en esta página':'Cámara apagada'}catch(e){toast('No pude abrir la cámara. Revisa los permisos del navegador y vuelve a intentarlo.')}};
-$('mic').onclick=async()=>{try{await ensureMedia();micOn=!micOn;stream.getAudioTracks().forEach(t=>t.enabled=micOn);$('mic').classList.toggle('off',!micOn);$('hint').textContent=micOn?'Micrófono activo':'Micrófono apagado';if(micOn)startRecognition();else if(recognition)recognition.stop()}catch(e){toast('No pude abrir el micrófono. Revisa los permisos del navegador.')}};
-function startRecognition(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('El dictado por voz no está disponible en este navegador. Puedes escribir en el chat.');return}recognition=new SR();recognition.lang='es-GT';recognition.continuous=true;recognition.interimResults=false;recognition.onresult=e=>{const phrase=e.results[e.results.length-1][0].transcript.trim();if(phrase){addMsg('Tú',phrase,true);respond(phrase)}};recognition.onerror=()=>{};recognition.onend=()=>{if(micOn)try{recognition.start()}catch(e){}};try{recognition.start()}catch(e){}}
-function respond(question){const q=question.toLowerCase();let who='CEO · Orquestador';let answer='Esta sala todavía usa respuestas de demostración. Para responder con el estado real del negocio, primero hay que conectar las fuentes de datos y el servicio de IA.';if(/operaci|proveedor|entrega/.test(q)){who='COO · Operaciones';answer='Puedo revisar tareas, entregas y proveedores cuando conectemos las herramientas de operaciones. En esta versión aún no tengo acceso a esos datos.'}else if(/venta|cliente|pipeline|comercial/.test(q)){who='CRO · Comercial';answer='Puedo revisar clientes y oportunidades cuando conectemos el CRM. Por ahora no puedo confirmar cifras reales ni acciones pendientes.'}else if(/finanz|dinero|presupuesto|costo/.test(q)){who='CFO · Finanzas';answer='Para darte un estado financiero fiable necesito conexión de solo lectura a las fuentes aprobadas. Esta demostración no consulta cuentas.'}else if(/tecnolog|sistema|código|incidente/.test(q)){who='CTO · Tecnología';answer='Puedo revisar sistemas e incidencias cuando conectemos las herramientas técnicas. Aún no estoy consultando infraestructura.'}setTimeout(()=>{document.querySelectorAll('.tile.speaking').forEach(x=>x.classList.remove('speaking'));const tile=[...document.querySelectorAll('[data-agent]')].find(x=>x.dataset.agent.startsWith(who.split(' · ')[1]));(tile||document.querySelector('[data-agent="CEO"]')).classList.add('speaking');addMsg(who,answer);if('speechSynthesis'in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(answer);u.lang='es-GT';u.onend=()=>document.querySelectorAll('.tile.speaking').forEach(x=>x.classList.remove('speaking'));speechSynthesis.speak(u)}setTimeout(()=>document.querySelectorAll('.tile.speaking').forEach(x=>x.classList.remove('speaking')),9000)},450)}
-$('form').onsubmit=e=>{e.preventDefault();const inp=$('message'),q=inp.value.trim();if(!q)return;inp.value='';addMsg('Tú',q,true);respond(q)};
-$('end').onclick=()=>{if(stream)stream.getTracks().forEach(t=>t.stop());if(recognition)recognition.stop();window.speechSynthesis?.cancel();stream=null;micOn=camOn=false;$('camera').style.display='none';$('youStatus').textContent='Cámara apagada';$('cam').classList.remove('off');$('mic').classList.remove('off');toast('Sala cerrada. La conversación queda visible hasta que cierres esta página.')};
-setInterval(()=>$('clock').textContent=new Date().toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit'}),1000);
-</script></body></html>
+const AGENTS={
+  coo:{name:'Agente Ops (COO)',color:'var(--green)',avatar:'⚙',
+    systemCtx:'Eres agent-ops-v2 del área de Operaciones de Azyvion. Datos actuales: órdenes Q4: 47/50, ahorro negociación $12k, 1 proveedor bajo SLA, satisfacción interna 9.1. Genera reportes ejecutivos concisos.',
+    reportPrompt:'Genera un reporte breve de estado operacional de Azyvion para el CEO. Menciona 1-2 hallazgos clave y 1 recomendación. Máximo 3 oraciones. Sé directo y usa datos concretos.',
+    type:['report','report','alert']},
+  cto:{name:'Agente Tech (CTO)',color:'var(--purple)',avatar:'⟨/⟩',
+    systemCtx:'Eres agent-tech-v3 de Tecnología en Azyvion. Datos: PR#284 en review, cobertura tests 96%, K8s 8 pods OK, costo cloud -8%, modelo ML 87% epoch, 0 vulnerabilidades críticas.',
+    reportPrompt:'Genera un reporte técnico breve para el CEO de Azyvion. 1-2 puntos clave de ingeniería/infra y 1 riesgo o acción pendiente. Máximo 3 oraciones.',
+    type:['report','alert','report']},
+  cpo:{name:'Agente Producto (CPO)',color:'var(--coral)',avatar:'◈',
+    systemCtx:'Eres agent-product-v2 de Producto en Azyvion. Datos: 34 historias en backlog, NPS 42, sprint velocity 42pts, roadmap Q1 con 18 features, North Star metric +8%.',
+    reportPrompt:'Genera un reporte de producto breve para el CEO de Azyvion. Resalta el avance más importante y 1 decisión que necesita atención. Máximo 3 oraciones.',
+    type:['report','report','report']},
+  cro:{name:'Agente Comercial (CRO)',color:'var(--red)',avatar:'🤝',
+    systemCtx:'Eres agent-sales-v4 de Comercial en Azyvion. Datos: pipeline $1.2M, 87 leads, conversión 34%, Acme Corp score 94 en propuesta, cuota Q4 al 78%, 2 clientes en riesgo churn.',
+    reportPrompt:'Genera un reporte comercial breve para el CEO. Resalta el estado del pipeline y 1 acción urgente. Máximo 3 oraciones.',
+    type:['alert','report','alert']},
+  cmo:{name:'Agente Marketing (CMO)',color:'var(--teal)',avatar:'📢',
+    systemCtx:'Eres agent-mkt-v2 de Marketing en Azyvion. Datos: 47 campañas, ROAS 4.2x, CTR SEM bajo 1.2% (ajustando), MQL mensual 12,400, webinar Nov con 340 registros.',
+    reportPrompt:'Genera un reporte de marketing breve para el CEO. Resalta la métrica más importante y 1 problema activo. Máximo 3 oraciones.',
+    type:['report','alert','report']},
+  cfo:{name:'Agente Finanzas (CFO)',color:'var(--amber)',avatar:'⊕',
+    systemCtx:'Eres agent-finance-v2 de Finanzas en Azyvion. Datos: cash flow $1.2M, EBITDA 28%, 312 transacciones hoy 0 discrepancias, forecast 2025 +34%, ahorro detectado $34k.',
+    reportPrompt:'Genera un reporte financiero breve para el CEO. Estado del flujo y 1 oportunidad o alerta financiera. Máximo 3 oraciones.',
+    type:['report','report','alert']},
+  ceo:{name:'Orquestador IA (CEO)',color:'var(--accent)',avatar:'◎',
+    systemCtx:'Eres el orquestador IA de Azyvion con visibilidad de todos los departamentos: Ops 99% OK, Tech carga 62%, Producto 97%, Comercial $1.2M pipeline 34% conv, Marketing ROAS 4.2x CTR bajo, Finanzas EBITDA 28%.',
+    reportPrompt:'Genera un briefing ejecutivo de 3 líneas sobre el estado global de Azyvion. Incluye la métrica más positiva, la mayor preocupación y la decisión más urgente.',
+    type:['report','report','meeting']}
+};
+
+const MEETING_TOPICS=[
+  {agents:['cro','cmo'],title:'Pipeline + MQL sin seguimiento',prompt:'Genera el minuto de una reunión breve entre el agente de Comercial (CRO) y Marketing (CMO) de Azyvion. Tema: 87 MQL sin seguimiento y CTR SEM bajo. Cada agente da 1 punto de vista y proponen 1 acción conjunta. Formato: "CRO: ...\nCMO: ...\nAcción: ...". Máximo 4 líneas.'},
+  {agents:['cto','cpo'],title:'Deuda técnica vs roadmap Q1',prompt:'Genera el minuto de una reunión entre el agente de Tecnología (CTO) y Producto (CPO) de Azyvion. Tema: 14 items de deuda técnica vs 18 features planificadas Q1. Cada uno da su postura y acuerdan prioridad. Formato: "CTO: ...\nCPO: ...\nAcuerdo: ...". Máximo 4 líneas.'},
+  {agents:['cfo','coo'],title:'Control de costos Q4',prompt:'Genera el minuto de una reunión entre Finanzas (CFO) y Operaciones (COO) de Azyvion. Tema: ahorro detectado $34k y proveedor bajo SLA. Cada uno aporta su análisis y deciden acción. Formato: "CFO: ...\nCOO: ...\nDecisión: ...". Máximo 4 líneas.'},
+  {agents:['cro','cpo'],title:'Features para enterprise',prompt:'Genera el minuto de una reunión entre Comercial (CRO) y Producto (CPO) de Azyvion. Tema: Acme Corp enterprise requiere features específicas. Qué pide ventas y qué puede hacer producto. Formato: "CRO: ...\nCPO: ...\nPlan: ...". Máximo 4 líneas.'}
+];
+
+let chatHistory=[];
+let currentChatAgent='ceo';
+let cycleCount=0;
+let reportCounts={coo:0,cto:0,cpo:0,cro:0,cmo:0,cfo:0};
+let alertCount=0;
+let totalReports=0;
+let totalDecisions=0;
+let meetingCount=0;
+let inboxUnread=0;
+const CYCLE_SECS=60;
+let cycleRemaining=CYCLE_SECS;
+
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn){document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));btn.classList.add('active');}
+}
+
+function switchRTab(id,btn){
+  document.querySelectorAll('.rtab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('rtab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='inbox'){inboxUnread=0;const b=document.getElementById('inbox-count');b.textContent='0';b.style.display='none';}
+}
+
+function selectChatAgent(btn){
+  document.querySelectorAll('.dept-pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  currentChatAgent=btn.dataset.key;
+  chatHistory=[];
+  const msgs=document.getElementById('chat-msgs');
+  msgs.innerHTML='';
+  addChatMsg(`Hola, soy ${AGENTS[currentChatAgent].name}. ¿En qué te ayudo?`,'ai',currentChatAgent);
+}
+
+function addChatMsg(text,role,agentKey){
+  const msgs=document.getElementById('chat-msgs');
+  const d=document.createElement('div');
+  d.className='msg '+role;
+  if(role==='ai'&&agentKey){const lbl=document.createElement('div');lbl.className='msg-label';lbl.textContent=AGENTS[agentKey].name;lbl.style.color=AGENTS[agentKey].color;d.appendChild(lbl);}
+  const t=document.createElement('div');t.textContent=text;d.appendChild(t);
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+
+function addThinkingBubble(){
+  const msgs=document.getElementById('chat-msgs');
+  const d=document.createElement('div');d.className='thinking';d.id='thinking-bubble';
+  d.innerHTML='<span></span><span></span><span></span>';
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+
+async function sendChat(){
+  const inp=document.getElementById('chat-input');
+  const btn=document.getElementById('send-btn');
+  const text=inp.value.trim();
+  if(!text)return;
+  addChatMsg(text,'user',null);
+  chatHistory.push({role:'user',content:text});
+  inp.value='';btn.disabled=true;
+  addThinkingBubble();
+  const agent=AGENTS[currentChatAgent];
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:120,system:agent.systemCtx+' Responde en español, conciso, máximo 2 oraciones.',messages:chatHistory.slice(-4)})});
+    const data=await r.json();
+    document.getElementById('thinking-bubble')?.remove();
+    const reply=data?.content?.[0]?.text||'Sin respuesta.';
+    chatHistory.push({role:'assistant',content:reply});
+    addChatMsg(reply,'ai',currentChatAgent);
+  }catch(e){document.getElementById('thinking-bubble')?.remove();addChatMsg('Error de conexión.','ai',currentChatAgent);}
+  btn.disabled=false;
+}
+
+function now(){return new Date().toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+
+function addGlobalLog(type,msg){
+  const log=document.getElementById('global-log');
+  const d=document.createElement('div');d.className='log-line';
+  d.innerHTML=`<span class="lt">${now()}</span><span class="lk ${type}">[${type.toUpperCase()}]</span><span class="lm">${msg}</span>`;
+  log.insertBefore(d,log.firstChild);
+  if(log.children.length>30)log.removeChild(log.lastChild);
+}
+
+function addFeedItem(deptKey,text,type){
+  const feed=document.getElementById('feed-'+deptKey);
+  const empty=feed.querySelector('div[style]');
+  if(empty)empty.remove();
+  const agent=AGENTS[deptKey];
+  const tagMap={report:'REPORTE',alert:'ALERTA',meeting:'REUNIÓN'};
+  const tagClass={report:'tag-report',alert:'tag-alert',meeting:'tag-meeting'};
+  const d=document.createElement('div');d.className='feed-item';
+  d.innerHTML=`<div class="feed-avatar" style="background:${agent.color}20;color:${agent.color}">${agent.avatar}</div><div class="feed-body"><div class="feed-name">${agent.name}<span class="feed-tag ${tagClass[type]}">${tagMap[type]}</span></div><div class="feed-text">${text}</div></div><div class="feed-time">${now()}</div>`;
+  feed.insertBefore(d,feed.firstChild);
+  if(feed.children.length>8)feed.removeChild(feed.lastChild);
+}
+
+function addInboxItem(agentKey,text,type){
+  const feed=document.getElementById('inbox-feed');
+  const empty=feed.querySelector('div[style]');
+  if(empty)empty.remove();
+  const agent=AGENTS[agentKey];
+  const tagClass={report:'tag-report',alert:'tag-alert',meeting:'tag-meeting'};
+  const tagLabel={report:'REPORTE',alert:'ALERTA',meeting:'REUNIÓN'};
+  const d=document.createElement('div');d.className='feed-item';
+  d.innerHTML=`<div class="feed-avatar" style="background:${agent.color}20;color:${agent.color}">${agent.avatar}</div><div class="feed-body"><div class="feed-name">${agent.name}<span class="feed-tag ${tagClass[type]}" style="margin-left:4px">${tagLabel[type]}</span></div><div class="feed-text">${text}</div></div><div class="feed-time">${now()}</div>`;
+  feed.insertBefore(d,feed.firstChild);
+  if(feed.children.length>15)feed.removeChild(feed.lastChild);
+  // badge
+  inboxUnread++;
+  const b=document.getElementById('inbox-count');
+  b.textContent=inboxUnread;b.style.display='inline-block';
+}
+
+function setLoad(key,val){
+  const pct=Math.min(100,val)+'%';
+  const pb=document.getElementById('pb-'+key);
+  const lb=document.getElementById('lb-'+key);
+  const lbv=document.getElementById('lbv-'+key);
+  if(pb)pb.style.width=pct;
+  if(lb)lb.style.width=pct;
+  if(lbv)lbv.textContent=Math.min(100,val)+'%';
+}
+
+function updateMetrics(){
+  document.getElementById('m-reports').textContent=totalReports;
+  document.getElementById('m-alerts').textContent=alertCount;
+  document.getElementById('m-meetings').textContent=meetingCount;
+  document.getElementById('m-decisions').textContent=totalDecisions;
+}
+
+async function runAgentCycle(){
+  const keys=Object.keys(AGENTS).filter(k=>k!=='ceo');
+  // Pick 2-3 agents to report this cycle (to save tokens)
+  const picked=keys.sort(()=>Math.random()-0.5).slice(0,2);
+
+  for(const key of picked){
+    const agent=AGENTS[key];
+    const typeIdx=cycleCount%agent.type.length;
+    const msgType=agent.type[typeIdx];
+    addGlobalLog('info',`agent-${key}: iniciando ciclo autónomo #${cycleCount+1}`);
+    setLoad(key,40+Math.floor(Math.random()*40));
+    try{
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:100,system:agent.systemCtx,messages:[{role:'user',content:agent.reportPrompt}]})});
+      const data=await r.json();
+      const text=data?.content?.[0]?.text||'Ciclo completado sin observaciones.';
+      addFeedItem(key,text,msgType);
+      addInboxItem(key,text,msgType);
+      addGlobalLog('ok',`agent-${key}: reporte entregado`);
+      reportCounts[key]++;
+      totalReports++;
+      if(msgType==='alert')alertCount++;
+      totalDecisions++;
+      document.getElementById('sv-'+key+'-3').textContent=reportCounts[key];
+      // update kpi counters
+      const kv={coo:'k-coo-1',cto:'k-cto-1',cpo:'k-cpo-1',cmo:'k-cmo-1'};
+      const kmap={coo:[342+cycleCount*3,null],cto:[891+cycleCount*5,null],cpo:[128+cycleCount*2,null],cmo:[47,null],cro:null,cfo:null};
+      if(key==='coo'){document.getElementById('sv-coo-1').textContent=342+cycleCount*3;if(document.getElementById('k-coo-1'))document.getElementById('k-coo-1').textContent=342+cycleCount*3;}
+      if(key==='cto'){document.getElementById('sv-cto-1').textContent=891+cycleCount*5;if(document.getElementById('k-cto-1'))document.getElementById('k-cto-1').textContent=891+cycleCount*5;}
+      if(key==='cpo'){document.getElementById('sv-cpo-1').textContent=128+cycleCount*2;if(document.getElementById('k-cpo-1'))document.getElementById('k-cpo-1').textContent=128+cycleCount*2;}
+      if(key==='cro'){document.getElementById('sv-cro-1').textContent='$'+(1.2+cycleCount*0.05).toFixed(1)+'M';}
+      if(key==='cfo'){document.getElementById('sv-cfo-1').textContent='$'+(4.8+cycleCount*0.1).toFixed(1)+'M';}
+      updateMetrics();
+    }catch(e){
+      addGlobalLog('err',`agent-${key}: error en ciclo`);
+      setLoad(key,0);
+    }
+    setLoad(key,20+Math.floor(Math.random()*30));
+    await new Promise(res=>setTimeout(res,1200));
+  }
+
+  // CEO briefing every 2 cycles
+  if(cycleCount%2===1){
+    addGlobalLog('info','orquestador: generando briefing ejecutivo');
+    try{
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:120,system:AGENTS.ceo.systemCtx,messages:[{role:'user',content:AGENTS.ceo.reportPrompt}]})});
+      const data=await r.json();
+      const text=data?.content?.[0]?.text||'Sin briefing.';
+      const feed=document.getElementById('ceo-feed');
+      const empty=feed.querySelector('div[style]');if(empty)empty.remove();
+      const d=document.createElement('div');d.className='feed-item';
+      d.innerHTML=`<div class="feed-avatar" style="background:rgba(79,127,255,0.15);color:var(--accent)">◎</div><div class="feed-body"><div class="feed-name">Orquestador IA<span class="feed-tag tag-report" style="margin-left:4px">BRIEFING</span></div><div class="feed-text">${text}</div></div><div class="feed-time">${now()}</div>`;
+      feed.insertBefore(d,feed.firstChild);
+      addInboxItem('ceo',text,'report');
+      addGlobalLog('ok','orquestador: briefing ejecutivo entregado');
+      totalDecisions++;updateMetrics();
+    }catch(e){addGlobalLog('err','orquestador: error en briefing');}
+  }
+
+  // Meeting every 3 cycles
+  if(cycleCount%3===2){
+    const mtopic=MEETING_TOPICS[meetingCount%MEETING_TOPICS.length];
+    addGlobalLog('info',`reunión IA: ${mtopic.title}`);
+    try{
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:130,system:'Eres el sistema de reuniones de Azyvion. Genera diálogos concisos entre agentes IA departamentales.',messages:[{role:'user',content:mtopic.prompt}]})});
+      const data=await r.json();
+      const text=data?.content?.[0]?.text||'Reunión sin resultado.';
+      const mlist=document.getElementById('meeting-list');
+      const empty=mlist.querySelector('div[style]');if(empty)empty.remove();
+      const attendeeChips=mtopic.agents.map(a=>`<span class="attendee-chip" style="color:${AGENTS[a].color}">${a.toUpperCase()}</span>`).join('');
+      const lines=text.split('\n').filter(l=>l.trim());
+      const logLines=lines.map(l=>{
+        const who=l.split(':')[0]?.trim()||'';
+        const msg=l.substring(l.indexOf(':')+1).trim();
+        return `<div class="mlog-line"><span class="mlog-who" style="color:${AGENTS[mtopic.agents.find(a=>l.toUpperCase().startsWith(a.toUpperCase()))||'ceo']?.color||'var(--text2)'}">${who}</span><span class="mlog-msg">${msg}</span></div>`;
+      }).join('');
+      const d=document.createElement('div');d.className='meeting-card';
+      d.innerHTML=`<div class="meeting-head"><div class="meeting-title">${mtopic.title}</div><span style="font-size:10px;color:var(--text3)">${now()}</span></div><div class="meeting-attendees">${attendeeChips}</div><div class="meeting-log">${logLines}</div>`;
+      mlist.insertBefore(d,mlist.firstChild);
+      meetingCount++;
+      document.getElementById('meeting-count').textContent=meetingCount;
+      addGlobalLog('ok',`reunión completada: ${mtopic.title}`);
+      addInboxItem('ceo',`Reunión completada: ${mtopic.title}. ${lines[lines.length-1]}`,'meeting');
+      updateMetrics();
+    }catch(e){addGlobalLog('err','error en reunión IA');}
+  }
+
+  cycleCount++;
+}
+
+// Cycle timer
+function startCycleTimer(){
+  cycleRemaining=CYCLE_SECS;
+  const bar=document.getElementById('cycle-bar');
+  const label=document.getElementById('cycle-timer');
+  const tick=setInterval(()=>{
+    cycleRemaining--;
+    const pct=((CYCLE_SECS-cycleRemaining)/CYCLE_SECS*100).toFixed(0);
+    bar.style.width=pct+'%';
+    label.textContent=`próximo en ${cycleRemaining}s`;
+    if(cycleRemaining<=0){
+      clearInterval(tick);
+      label.textContent='ejecutando...';
+      bar.style.width='100%';
+      runAgentCycle().then(()=>startCycleTimer());
+    }
+  },1000);
+}
+
+// Clock
+setInterval(()=>{document.getElementById('clock').textContent=new Date().toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit',second:'2-digit'})},1000);
+
+// Init
+window.addEventListener('load',()=>{
+  addChatMsg(`Hola, soy ${AGENTS['ceo'].name}. Tengo visibilidad de todos los departamentos. ¿En qué te ayudo?`,'ai','ceo');
+  // first cycle after 5s, then every 60s
+  setTimeout(()=>{
+    addGlobalLog('info','Sistema autónomo iniciado — primer ciclo ejecutándose');
+    runAgentCycle().then(()=>startCycleTimer());
+  },5000);
+  startCycleTimer();
+});
+</script>
+</body>
+</html>
