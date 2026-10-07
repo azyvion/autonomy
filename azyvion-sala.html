@@ -23,6 +23,18 @@ button,input{font:inherit}button{cursor:pointer;color:inherit}
 .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transform:scaleX(-1)}
 .agent-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 34%;display:block;filter:saturate(.92)}
 .tile[data-agent]::after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#080a0fcc);pointer-events:none}.agent-avatar-frame{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:2;background:#080a0f}.tile-label,.tile-status{z-index:3}
+.tile[data-agent]{background:radial-gradient(ellipse at 50% 40%,#1b2232 0,#10131c 68%)}
+.tile-label,.tile-status{z-index:2}
+.agent-presence{position:absolute;top:43%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:9px;color:#a7afc5;font-size:11px;letter-spacing:.2px}
+.presence-mark{width:42px;height:42px;border:1px solid #34425c;border-radius:50%;display:grid;place-items:center;color:#7d8ca9;background:#151a26}
+.presence-mark svg{width:18px;height:18px;opacity:.8}
+.presence-wave{height:16px;display:flex;align-items:center;gap:3px;opacity:.5}
+.presence-wave i{width:3px;height:4px;border-radius:3px;background:#7c8aa5;display:block;transition:height .2s}
+.tile.speaking .presence-mark{border-color:#5680ff;color:#b7c8ff;box-shadow:0 0 20px #5680ff44}
+.tile.speaking .presence-wave{opacity:1}
+.tile.speaking .presence-wave i{background:#83a0ff;animation:voiceWave .65s ease-in-out infinite alternate}
+.tile.speaking .presence-wave i:nth-child(2n){animation-delay:.16s}.tile.speaking .presence-wave i:nth-child(3n){animation-delay:.3s}
+@keyframes voiceWave{from{height:4px}to{height:15px}}
 
 
 .you-avatar{width:70px;height:70px;border-radius:50%;background:#1a2040;display:grid;place-items:center;font-size:30px;border:2px solid #3a4c77}
@@ -85,22 +97,27 @@ button,input{font:inherit}button{cursor:pointer;color:inherit}
       <div class="tile" data-agent="CEO">
         <span class="tile-label"><strong>Andrés Castellanos</strong>CEO · Orquestador</span>
         <span class="tile-status" id="statusCEO">Escuchando</span>
+        <span class="tile-status" id="statusCEO">Conectado</span>
       </div>
       <div class="tile" data-agent="Operaciones">
         <span class="tile-label"><strong>Laura Montoya</strong>COO · Operaciones</span>
         <span class="tile-status" id="statusOperaciones">Escuchando</span>
+        <span class="tile-status" id="statusOperaciones">Conectado</span>
       </div>
       <div class="tile" data-agent="Tecnología">
         <span class="tile-label"><strong>Diego Vargas</strong>CTO · Tecnología</span>
         <span class="tile-status" id="statusTecnología">Escuchando</span>
+        <span class="tile-status" id="statusTecnología">Conectado</span>
       </div>
       <div class="tile" data-agent="Comercial">
         <span class="tile-label"><strong>Sofía Reyes</strong>CRO · Comercial</span>
         <span class="tile-status" id="statusComercial">Escuchando</span>
+        <span class="tile-status" id="statusComercial">Conectado</span>
       </div>
       <div class="tile" data-agent="Finanzas">
         <span class="tile-label"><strong>Roberto Fuentes</strong>CFO · Finanzas</span>
         <span class="tile-status" id="statusFinanzas">Escuchando</span>
+        <span class="tile-status" id="statusFinanzas">Conectado</span>
       </div>
     </section>
   </main>
@@ -115,9 +132,11 @@ button,input{font:inherit}button{cursor:pointer;color:inherit}
 </div>
 <footer class="controls">
   <button class="ctrl" id="avatarBtn" title="Conectar avatar interactivo">👤</button><button class="ctrl" id="mic" title="Activar micrófono">🎙</button>
+  <button class="ctrl" id="mic" title="Activar micrófono">🎙</button>
   <button class="ctrl" id="cam" title="Activar cámara">▣</button>
   <button class="ctrl end" id="end" title="Cerrar sala">☎</button>
   <span class="hint" id="hint">Retratos provisionales · avatar interactivo pendiente</span>
+  <span class="hint" id="hint">Agentes conectados · voz individual por persona</span>
 </footer>
 </div>
 <div id="avatarKeyScreen" style="position:fixed;inset:0;background:#080a0fcc;z-index:210;display:none;align-items:center;justify-content:center">
@@ -151,12 +170,17 @@ const agentPhotos = {
 };
 let liveAvatarUrl='', liveAvatarFrame=null;
 function initFaces(){
+// PRESENCIA — tarjetas conectadas sin foto ni avatar
+function initParticipants(){
   document.querySelectorAll('.tile[data-agent]').forEach(tile=>{
     const name=tile.dataset.agent, photo=document.createElement('img');
     photo.className='agent-photo'; photo.src=agentPhotos[name];
     photo.alt=`Retrato de ${tile.querySelector('.tile-label strong')?.textContent || name}`;
     photo.loading='eager'; photo.referrerPolicy='no-referrer';
     tile.insertBefore(photo,tile.firstChild);
+    const presence=document.createElement('div'); presence.className='agent-presence';
+    presence.innerHTML='<span class="presence-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg></span><span class="presence-label">En línea</span><span class="presence-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>';
+    tile.insertBefore(presence,tile.firstChild);
   });
 }
 // ══════════════════════════════════════════════════════════════════════════════
@@ -177,6 +201,7 @@ function setThinking(k,on){
   if(!tile||!st)return;
   if(on){tile.classList.add('thinking');st.innerHTML='<span class="thinking-dot">·</span><span class="thinking-dot">·</span><span class="thinking-dot">·</span>';}
   else{tile.classList.remove('thinking');st.textContent='Listo';}
+  else{tile.classList.remove('thinking');st.textContent='Conectado';}
 }
 
 function setSpeaking(k,label){
@@ -191,6 +216,12 @@ function setSpeaking(k,label){
       if(st)st.textContent='Listo';
     },9000);
   }
+  const tile=document.querySelector(`[data-agent="${k}"]`), st=$('status'+k);
+  if(tile){tile.classList.add('speaking');if(st)st.textContent='Hablando';}
+}
+function stopSpeaking(k){
+  document.querySelector(`[data-agent="${k}"]`)?.classList.remove('speaking');
+  const st=$('status'+k);if(st)st.textContent='Conectado';
 }
 
 function fmt(n){if(n===null||n===undefined)return'–';return'Q '+Number(n).toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -218,6 +249,16 @@ const VCFG={CEO:{pitch:0.88,rate:0.91,g:'M'},Operaciones:{pitch:1.08,rate:1.0,g:
 let cachedVoices=[];
 if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>{cachedVoices=speechSynthesis.getVoices();};
 
+const VCFG={
+  CEO:{gender:'M',prefer:['raul','jorge','pablo','carlos','male','man'],pitch:0.98,rate:0.96},
+  Operaciones:{gender:'F',prefer:['helena','sabina','lucia','lucía','female','woman','paulina'],pitch:1.04,rate:1.00},
+  Tecnología:{gender:'M',prefer:['diego','andres','andrés','juan','male','man'],pitch:1.02,rate:1.03},
+  Comercial:{gender:'F',prefer:['monica','mónica','sofia','sofía','maria','maría','female','woman'],pitch:1.07,rate:1.02},
+  Finanzas:{gender:'M',prefer:['raul','pablo','carlos','male','man'],pitch:0.95,rate:0.94}
+};
+let cachedVoices=[], voiceAssignments={};
+function refreshVoices(){cachedVoices=speechSynthesis.getVoices();voiceAssignments={};}
+if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=refreshVoices;refreshVoices();}
 function getVoice(k){
   const v=cachedVoices.length?cachedVoices:speechSynthesis.getVoices();
   const cfg=VCFG[k]||{}; if(!v.length)return null;
@@ -225,8 +266,23 @@ function getVoice(k){
   const pool=es.length?es:v;
   const ft=cfg.g==='F'?['female','woman','femenin','helena','esperanza','paulina','valeria','sofia','maria','carmen','lucia']:['male','man','masculin','jorge','diego','juan','pablo','carlos'];
   return pool.find(x=>ft.some(t=>x.name.toLowerCase().includes(t)))||pool[cfg.g==='F'?Math.min(1,pool.length-1):0]||null;
+  const all=cachedVoices.length?cachedVoices:speechSynthesis.getVoices();
+  const spanish=all.filter(v=>/^es([_-]|$)/i.test(v.lang));
+  const pool0=spanish.length?spanish:all; const natural=pool0.filter(v=>/natural|online|neural|premium/i.test(v.name)); const pool=natural.length?natural:pool0;
+  if(!pool.length)return null;
+  if(voiceAssignments[k])return voiceAssignments[k];
+  const used=new Set(Object.values(voiceAssignments).map(v=>v.voiceURI||v.name));
+  const cfg=VCFG[k]||{}, available=pool.filter(v=>!used.has(v.voiceURI||v.name));
+  const preferred=available.find(v=>cfg.prefer.some(tag=>v.name.toLowerCase().includes(tag)));
+  const genderWords=cfg.gender==='F'?['female','woman','femenina','helena','sabina']:['male','man','masculino','jorge','raul','pablo'];
+  const byGender=available.find(v=>genderWords.some(tag=>v.name.toLowerCase().includes(tag)));
+  const chosen=preferred||byGender||available[0]||pool[Object.keys(voiceAssignments).length%pool.length];
+  voiceAssignments[k]=chosen; return chosen;
 }
 
+function cleanForSpeech(text){
+  return String(text).replace(/```[\s\S]*?```/g,' ').replace(/[*_#>`]/g,'').replace(/^\s*[-•]\s*/gm,'').replace(/\s+/g,' ').trim();
+}
 function speak(k,text){
   if(!('speechSynthesis' in window))return;
   speechSynthesis.cancel();
@@ -235,6 +291,11 @@ function speak(k,text){
   u.onend=()=>{document.querySelectorAll('.tile.speaking').forEach(x=>x.classList.remove('speaking'));};
   const go=()=>{const vx=getVoice(k);if(vx)u.voice=vx;speechSynthesis.speak(u);};
   if(speechSynthesis.getVoices().length>0)go(); else setTimeout(go,400);
+  const spoken=cleanForSpeech(text), u=new SpeechSynthesisUtterance(spoken), vc=VCFG[k]||{};
+  u.lang='es-GT'; u.rate=vc.rate||1; u.pitch=vc.pitch||1;
+  u.onend=()=>stopSpeaking(k);u.onerror=()=>stopSpeaking(k);
+  const go=()=>{const vx=getVoice(k);if(vx){u.voice=vx;u.lang=vx.lang||'es-GT';}speechSynthesis.speak(u);};
+  if(speechSynthesis.getVoices().length)go(); else setTimeout(go,500);
 }
 
 async function askClaude(sys,msgs){
@@ -279,6 +340,7 @@ async function elegirAgente(q){
 async function responderAgente(k,q){
   const ag=AGENTES[k], ctx=await ag.contexto();
   const sys=PERSONAS[k]+'\n\n'+ctx;
+  const sys=PERSONAS[k]+'\n\nHabla como en una conversación real, no como quien lee un informe. Empieza por tu idea principal y agrega solo lo necesario. Usa frases cortas y variadas, ritmo natural y palabras sencillas. Evita listas, encabezados, paréntesis, símbolos y abreviaturas. Redacta para el oído. Si mencionas cantidades, exprésalas como se dirían en voz alta.'+'\n\n'+ctx;
   const msgs=historial.slice(-6).map(h=>({role:h.role,content:h.content}));
   msgs.push({role:'user',content:q});
   return askClaude(sys,msgs);
@@ -309,6 +371,7 @@ async function respond(q){
 })();
 
 initFaces();
+initParticipants();
 
 // ══════════════════════════════════════════════════════════════════════════════
 // MEDIA + FORM
