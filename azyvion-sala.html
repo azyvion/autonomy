@@ -22,9 +22,9 @@ button,input{font:inherit}button{cursor:pointer;color:inherit}
 .tile.thinking{border-color:var(--amber);box-shadow:0 0 0 2px #ffc15b33}
 .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transform:scaleX(-1)}
 .agent-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 34%;display:block;filter:saturate(.92)}
-.tile[data-agent]::after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#080a0fcc);pointer-events:none}
-.tile[data-agent].speaking .agent-photo{animation:livePresence 2.8s ease-in-out infinite alternate}
-@keyframes livePresence{from{transform:scale(1);object-position:center 34%}to{transform:scale(1.035);object-position:center 32%}}
+.tile[data-agent]::after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#080a0fcc);pointer-events:none}.agent-avatar-frame{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:2;background:#080a0f}.tile-label,.tile-status{z-index:3}
+
+
 .you-avatar{width:70px;height:70px;border-radius:50%;background:#1a2040;display:grid;place-items:center;font-size:30px;border:2px solid #3a4c77}
 .you video.cam-active{display:block}
 .tile-label{position:absolute;bottom:10px;left:11px;background:#090b11cc;padding:5px 9px;border-radius:7px;font-size:11px;line-height:1.3}
@@ -84,23 +84,23 @@ button,input{font:inherit}button{cursor:pointer;color:inherit}
       </div>
       <div class="tile" data-agent="CEO">
         <span class="tile-label"><strong>Andrés Castellanos</strong>CEO · Orquestador</span>
-        <span class="tile-status" id="statusCEO">Listo</span>
+        <span class="tile-status" id="statusCEO">Escuchando</span>
       </div>
       <div class="tile" data-agent="Operaciones">
         <span class="tile-label"><strong>Laura Montoya</strong>COO · Operaciones</span>
-        <span class="tile-status" id="statusOperaciones">Listo</span>
+        <span class="tile-status" id="statusOperaciones">Escuchando</span>
       </div>
       <div class="tile" data-agent="Tecnología">
         <span class="tile-label"><strong>Diego Vargas</strong>CTO · Tecnología</span>
-        <span class="tile-status" id="statusTecnología">Listo</span>
+        <span class="tile-status" id="statusTecnología">Escuchando</span>
       </div>
       <div class="tile" data-agent="Comercial">
         <span class="tile-label"><strong>Sofía Reyes</strong>CRO · Comercial</span>
-        <span class="tile-status" id="statusComercial">Listo</span>
+        <span class="tile-status" id="statusComercial">Escuchando</span>
       </div>
       <div class="tile" data-agent="Finanzas">
         <span class="tile-label"><strong>Roberto Fuentes</strong>CFO · Finanzas</span>
-        <span class="tile-status" id="statusFinanzas">Listo</span>
+        <span class="tile-status" id="statusFinanzas">Escuchando</span>
       </div>
     </section>
   </main>
@@ -114,11 +114,20 @@ button,input{font:inherit}button{cursor:pointer;color:inherit}
   </aside>
 </div>
 <footer class="controls">
-  <button class="ctrl" id="mic" title="Activar micrófono">🎙</button>
+  <button class="ctrl" id="avatarBtn" title="Conectar avatar interactivo">👤</button><button class="ctrl" id="mic" title="Activar micrófono">🎙</button>
   <button class="ctrl" id="cam" title="Activar cámara">▣</button>
   <button class="ctrl end" id="end" title="Cerrar sala">☎</button>
-  <span class="hint" id="hint">Sala conectada al CRM de Azyvion</span>
+  <span class="hint" id="hint">Retratos provisionales · avatar interactivo pendiente</span>
 </footer>
+</div>
+<div id="avatarKeyScreen" style="position:fixed;inset:0;background:#080a0fcc;z-index:210;display:none;align-items:center;justify-content:center">
+  <div style="background:#11141d;border:1px solid #282d40;border-radius:16px;padding:28px;width:420px;max-width:92vw">
+    <div style="font-size:19px;font-weight:700;margin-bottom:8px">Conectar avatar interactivo</div>
+    <p style="color:#8990aa;font-size:12px;line-height:1.6;margin:0 0 16px">Abre un avatar de IA en tiempo real en la tarjeta del agente que responde. Para esta prueba se usa Sandbox de LiveAvatar; necesitas una cuenta y API key. La clave se mantiene solo en esta página y se envía directamente a LiveAvatar.</p>
+    <input id="liveAvatarKey" type="password" placeholder="LiveAvatar API key" autocomplete="off" style="width:100%;background:#171b27;border:1px solid #282d40;border-radius:8px;padding:12px;color:#e8ebf5;box-sizing:border-box;margin-bottom:10px">
+    <div id="avatarError" style="color:#ff6b6b;font-size:12px;min-height:18px;margin-bottom:8px"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button id="avatarCancel" style="background:#171b27;border:1px solid #282d40;border-radius:8px;padding:9px 12px">Cancelar</button><button id="avatarConnect" style="background:#5680ff;border:0;border-radius:8px;padding:9px 12px;color:white">Conectar avatar →</button></div>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -132,7 +141,7 @@ const ORG_ID = 'org_azyvion_001';
 const $ = id => document.getElementById(id);
 let stream=null, micOn=false, camOn=false, recognition=null, responding=false;
 
-// RETRATOS FOTOGRÁFICOS — rostros humanos visibles en las tarjetas
+// RETRATOS — sustitución temporal mientras se conecta el avatar interactivo
 const agentPhotos = {
   CEO: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&h=700&q=85',
   Operaciones: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&h=700&q=85',
@@ -140,12 +149,12 @@ const agentPhotos = {
   Comercial: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&h=700&q=85',
   Finanzas: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1000&h=700&q=85'
 };
+let liveAvatarUrl='', liveAvatarFrame=null;
 function initFaces(){
   document.querySelectorAll('.tile[data-agent]').forEach(tile=>{
-    const name=tile.dataset.agent;
-    const photo=document.createElement('img');
+    const name=tile.dataset.agent, photo=document.createElement('img');
     photo.className='agent-photo'; photo.src=agentPhotos[name];
-    photo.alt=`Retrato fotográfico de ${tile.querySelector('.tile-label strong')?.textContent || name}`;
+    photo.alt=`Retrato de ${tile.querySelector('.tile-label strong')?.textContent || name}`;
     photo.loading='eager'; photo.referrerPolicy='no-referrer';
     tile.insertBefore(photo,tile.firstChild);
   });
@@ -175,6 +184,7 @@ function setSpeaking(k,label){
   const tile=document.querySelector(`[data-agent="${k}"]`);
   if(tile){
     tile.classList.add('speaking');
+    if(liveAvatarUrl)mountLiveAvatar();
     const st=$('status'+k); if(st)st.textContent='Hablando';
     setTimeout(()=>{
       tile.classList.remove('speaking');
@@ -311,6 +321,30 @@ $('mic').onclick=async()=>{try{await ensureMedia();micOn=!micOn;stream.getAudioT
 
 function startRec(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Voz no disponible. Usa el chat.');return;}recognition=new SR();recognition.lang='es-GT';recognition.continuous=true;recognition.interimResults=false;recognition.onresult=e=>{const p=e.results[e.results.length-1][0].transcript.trim();if(p&&!responding){addMsg('Tú · CEO',p,true);respond(p);}};recognition.onerror=()=>{};recognition.onend=()=>{if(micOn)try{recognition.start();}catch(e){}};try{recognition.start();}catch(e){}}
 
+$('avatarBtn').onclick=()=>{ $('avatarKeyScreen').style.display='flex'; $('liveAvatarKey').focus(); };
+$('avatarCancel').onclick=()=>{ $('avatarKeyScreen').style.display='none'; $('avatarError').textContent=''; };
+$('avatarConnect').onclick=async()=>{
+  const key=$('liveAvatarKey').value.trim();
+  if(!key){$('avatarError').textContent='Ingresa tu LiveAvatar API key.';return;}
+  $('avatarConnect').disabled=true; $('avatarError').textContent='Conectando avatar…';
+  try{
+    const r=await fetch('https://api.liveavatar.com/v2/embeddings',{method:'POST',headers:{'X-API-KEY':key,'Content-Type':'application/json'},body:JSON.stringify({avatar_id:'65f9e3c9-d48b-4118-b73a-4ae2e3cbb8f0',context_id:'158f5d55-2d4f-11f1-8d28-066a7fa2e369',is_sandbox:true})});
+    const data=await r.json(); if(!r.ok||!data?.data?.url)throw new Error(data?.message||'LiveAvatar no aceptó la conexión. Revisa la cuenta y la API key.');
+    liveAvatarUrl=data.data.url; mountLiveAvatar(); $('avatarKeyScreen').style.display='none'; $('liveAvatarKey').value=''; $('avatarError').textContent=''; toast('Avatar interactivo conectado.');
+  }catch(e){$('avatarError').textContent=e.message||'No pude conectar el avatar.';}
+  finally{$('avatarConnect').disabled=false;}
+};
+$('liveAvatarKey').onkeydown=e=>{if(e.key==='Enter')$('avatarConnect').click();};
+function mountLiveAvatar(){
+  if(!liveAvatarUrl)return;
+  const tile=document.querySelector('.tile.speaking[data-agent]')||document.querySelector('.tile[data-agent="CEO"]');
+  if(!tile)return;
+  if(liveAvatarFrame)liveAvatarFrame.remove();
+  liveAvatarFrame=document.createElement('iframe'); liveAvatarFrame.className='agent-avatar-frame';
+  liveAvatarFrame.src=liveAvatarUrl; liveAvatarFrame.title='Avatar IA interactivo';
+  liveAvatarFrame.allow='microphone; autoplay; camera; fullscreen';
+  tile.insertBefore(liveAvatarFrame,tile.querySelector('.tile-label'));
+}
 $('form').onsubmit=e=>{e.preventDefault();const inp=$('message'),q=inp.value.trim();if(!q||responding)return;inp.value='';addMsg('Tú · CEO',q,true);respond(q);};
 
 $('end').onclick=()=>{if(stream)stream.getTracks().forEach(t=>t.stop());if(recognition)recognition.stop();window.speechSynthesis?.cancel();stream=null;micOn=camOn=false;$('camera').style.display='none';$('youStatus').textContent='Cámara apagada';$('cam').classList.remove('off');$('mic').classList.remove('off');toast('Sala cerrada.');};
